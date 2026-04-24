@@ -35,9 +35,9 @@ const DashboardLayout = ({ children }) => {
   }
 
   return (
-    <div className="flex h-screen bg-primary overflow-hidden" dir="rtl">
+    <div className="flex h-screen bg-[#0f172a] overflow-hidden" dir="rtl">
       {/* Sidebar */}
-      <aside className="w-72 border-l border-glass-border flex flex-col bg-bg-secondary">
+      <aside className="w-72 border-l border-white/5 flex flex-col bg-[#0f172a]">
         <div className="p-8 mb-4">
           <Link to="/" className="flex items-center gap-4 group">
             <div className="w-8 h-8 bg-accent-gold flex items-center justify-center rounded-sm">
@@ -71,7 +71,7 @@ const DashboardLayout = ({ children }) => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="h-20 border-b border-glass-border px-10 flex items-center justify-between bg-primary/50 backdrop-blur-md z-20">
+        <header className="h-20 border-b border-white/5 px-10 flex items-center justify-between bg-[#0f172a]/80 backdrop-blur-md z-20">
           <div className="relative w-96">
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
             <input 
@@ -99,7 +99,7 @@ const DashboardLayout = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <section className="flex-1 overflow-y-auto p-10 bg-[#0c0c0c]">
+        <section className="flex-1 overflow-y-auto p-10 bg-[#1e293b]">
           {children}
         </section>
       </main>
