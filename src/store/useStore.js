@@ -44,7 +44,7 @@ export const useStore = create((set) => ({
     { id: 'Q-1039', client: 'كريم مجدي', type: 'تعديلات معمارية', date: '١٨ أبريل ٢٠٢٦', value: '٨٥,٠٠٠ ج.م', status: 'approved' },
   ],
   addQuote: (quote) => set((state) => ({ 
-    quotes: [{ ...quote, id: \`Q-10\${state.quotes.length + 43}\` }, ...state.quotes] 
+    quotes: [{ ...quote, id: `Q-10${state.quotes.length + 43}` }, ...state.quotes] 
   })),
   updateQuoteStatus: (id, status) => set((state) => ({
     quotes: state.quotes.map(q => q.id === id ? { ...q, status } : q)
