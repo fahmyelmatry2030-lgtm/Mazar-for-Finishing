@@ -1,10 +1,15 @@
 import React from 'react'
 import Contact from '../../components/Contact'
+import SEO from '../../components/SEO'
 import { motion } from 'framer-motion'
 
 const ContactPage = () => {
   return (
     <div className="pt-32 min-h-screen">
+      <SEO 
+        title="تواصل معنا" 
+        description="نحن مستعدون للرد على استفساراتك ومساعدتك في مشروعك القادم." 
+      />
       <div className="container mb-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

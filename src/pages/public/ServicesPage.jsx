@@ -2,11 +2,16 @@ import React from 'react'
 import Services from '../../components/Services'
 import Process from '../../components/Process'
 import CostEstimator from '../../components/CostEstimator'
+import SEO from '../../components/SEO'
 import { motion } from 'framer-motion'
 
 const ServicesPage = () => {
   return (
     <div className="pt-32 min-h-screen">
+      <SEO 
+        title="خدماتنا" 
+        description="نقدم خدمات متكاملة في التصميم المعماري، التصميم الداخلي، التشطيبات الفاخرة، وأنظمة المنازل الذكية." 
+      />
       <div className="container mb-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

@@ -1,5 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore'
+import { signOut } from 'firebase/auth'
+import { auth } from '../firebase'
 import { 
   LayoutDashboard, 
   Briefcase, 
@@ -26,10 +28,9 @@ const SidebarItem = ({ icon: Icon, label, to, active }) => (
 const DashboardLayout = ({ children }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const logout = useStore(state => state.logout)
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await signOut(auth)
     navigate('/login')
   }
 

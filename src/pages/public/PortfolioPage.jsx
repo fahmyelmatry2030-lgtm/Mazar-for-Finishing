@@ -1,10 +1,15 @@
 import React from 'react'
 import Portfolio from '../../components/Portfolio'
+import SEO from '../../components/SEO'
 import { motion } from 'framer-motion'
 
 const PortfolioPage = () => {
   return (
     <div className="pt-32 min-h-screen">
+      <SEO 
+        title="سابقة الأعمال" 
+        description="استعرض أحدث مشاريع مزار للتشطيبات وتعرف على جودة التنفيذ في كل التفاصيل." 
+      />
       <div className="container mb-12">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

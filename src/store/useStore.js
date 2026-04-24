@@ -8,16 +8,7 @@ import {
 
 export const useStore = create((set, get) => ({
 
-  // ── Auth (session only) ───────────────────────────────────────────────────
-  isAuthenticated: false,
-  login: (email, password) => {
-    if (email === 'admin@mazar.com' && password === 'admin123') {
-      set({ isAuthenticated: true })
-      return true
-    }
-    return false
-  },
-  logout: () => set({ isAuthenticated: false }),
+  // ── Auth handled by Firebase onAuthStateChanged in App.jsx ────────────────
 
   // ── Loading state ─────────────────────────────────────────────────────────
   loading: true,
