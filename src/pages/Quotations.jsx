@@ -1,11 +1,22 @@
-import React from 'react'
-import { FileText, CheckCircle, XCircle, Clock, Search, Filter, MoreVertical, Check, X } from 'lucide-react'
+import React, { useState, useRef } from 'react'
+import { FileText, CheckCircle, XCircle, Clock, Search, Filter, MoreVertical, Check, X, Printer, X as CloseIcon } from 'lucide-react'
+import { useReactToPrint } from 'react-to-print'
+import { InvoiceTemplate } from '../components/InvoiceTemplate'
 import { useStore } from '../store/useStore'
 import toast from 'react-hot-toast'
 
 const Quotations = () => {
   const quotes = useStore(state => state.quotes)
   const updateQuoteStatus = useStore(state => state.updateQuoteStatus)
+
+  // Invoice Printing State
+  const [selectedQuote, setSelectedQuote] = useState(null)
+  const invoiceRef = useRef()
+
+  const handlePrint = useReactToPrint({
+    content: () => invoiceRef.current,
+    documentTitle: `فاتورة_مزار_${selectedQuote?.client || 'عميل'}`,
+  })
 
   const handleUpdateStatus = (id, status) => {
     updateQuoteStatus(id, status)
@@ -84,6 +95,13 @@ const Quotations = () => {
                           <X size={16} />
                         </button>
                       </div>
+                    ) : q.status === 'approved' ? (
+                      <button 
+                        onClick={() => setSelectedQuote(q)}
+                        className="px-4 py-2 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-bg-primary rounded font-bold text-sm transition-colors flex items-center gap-2 mr-auto"
+                      >
+                        <Printer size={16} /> الفاتورة
+                      </button>
                     ) : (
                       <button className="text-text-secondary hover:text-white transition-colors"><MoreVertical size={18} /></button>
                     )}
@@ -94,6 +112,41 @@ const Quotations = () => {
           </table>
         </div>
       </div>
+
+      {/* Invoice Preview Modal */}
+      {selectedQuote && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-bg-secondary w-full max-w-5xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-white/10 shadow-2xl">
+            {/* Modal Header */}
+            <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/20">
+              <h3 className="text-xl font-bold">معاينة الفاتورة</h3>
+              <div className="flex gap-3">
+                <button 
+                  onClick={handlePrint}
+                  className="px-6 py-2 bg-accent-gold text-bg-primary font-bold rounded-lg flex items-center gap-2 hover:bg-white transition-colors"
+                >
+                  <Printer size={18} /> طباعة / تصدير PDF
+                </button>
+                <button 
+                  onClick={() => setSelectedQuote(null)}
+                  className="p-2 text-text-secondary hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                >
+                  <CloseIcon size={24} />
+                </button>
+              </div>
+            </div>
+            
+            {/* Modal Body (Scrollable Print Preview) */}
+            <div className="flex-1 overflow-y-auto p-8 bg-gray-900/50 flex justify-center print-container">
+              {/* The actual component to print */}
+              <div className="shadow-2xl overflow-hidden print-area">
+                <InvoiceTemplate ref={invoiceRef} quote={selectedQuote} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

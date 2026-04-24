@@ -211,3 +211,22 @@ button {
     --section-pad: 80px;
   }
 }
+
+/* ── Invoice Print Preview ── */
+@layer components {
+  .print-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .print-container::-webkit-scrollbar {
+    display: none;
+  }
+  .print-area {
+    width: 210mm;
+    min-height: 297mm;
+    background-color: white;
+    color: black;
+    transform: scale(0.85);
+    transform-origin: top center;
+  }
+}
