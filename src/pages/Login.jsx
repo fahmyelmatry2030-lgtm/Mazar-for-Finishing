@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import SEO from '../components/SEO'
 import { motion } from 'framer-motion'
 import { Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react'
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../firebase'
 import toast from 'react-hot-toast'
 
@@ -25,25 +25,6 @@ const Login = () => {
       })
       navigate('/dashboard')
     } catch (err) {
-      // Auto-create account for the first time if not found
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-        try {
-          await createUserWithEmailAndPassword(auth, email, password)
-          toast.success('تم إنشاء حساب المدير بنجاح! جاري الدخول...', {
-            style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' },
-            iconTheme: { primary: '#D4AF37', secondary: '#1A1A1A' },
-          })
-          navigate('/dashboard')
-          return
-        } catch (createErr) {
-          toast.error(`مشكلة في Firebase: ${createErr.code}`, {
-            style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
-          })
-          setLoading(false)
-          return
-        }
-      }
-
       console.error(err)
       const messages = {
         'auth/invalid-credential': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
@@ -135,6 +116,13 @@ const Login = () => {
               </>
             )}
           </button>
+
+          <div className="text-center pt-4">
+            <p className="text-sm text-text-secondary font-bold">
+              ليس لديك حساب؟{' '}
+              <Link to="/register" className="text-accent-gold hover:underline">إنشاء حساب مدير</Link>
+            </p>
+          </div>
         </form>
       </motion.div>
     </div>

@@ -17,6 +17,7 @@ const Financials = lazy(() => import('./pages/Financials'))
 const Settings = lazy(() => import('./pages/Settings'))
 const Quotations = lazy(() => import('./pages/Quotations'))
 const Login = lazy(() => import('./pages/Login'))
+const Register = lazy(() => import('./pages/Register'))
 const CMS = lazy(() => import('./pages/CMS'))
 
 import Home from './pages/public/Home'
@@ -117,6 +118,14 @@ function App() {
             <PublicRoute>
               <Suspense fallback={<div className="min-h-screen bg-bg-primary flex items-center justify-center"><div className="w-8 h-8 border-2 border-accent-gold border-t-transparent rounded-full animate-spin" /></div>}>
                 <Login />
+              </Suspense>
+            </PublicRoute>
+          } />
+
+          <Route path="/register" element={
+            <PublicRoute>
+              <Suspense fallback={<div className="min-h-screen bg-bg-primary flex items-center justify-center"><div className="w-8 h-8 border-2 border-accent-gold border-t-transparent rounded-full animate-spin" /></div>}>
+                <Register />
               </Suspense>
             </PublicRoute>
           } />
