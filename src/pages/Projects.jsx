@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Plus, MapPin, Calendar, DollarSign, X, GripVertical } from 'lucide-react'
+import { Plus, MapPin, Calendar, DollarSign, X, GripVertical, Trash2, Edit3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStore } from '../store/useStore'
 import toast from 'react-hot-toast'
@@ -43,15 +43,18 @@ const ProjectCard = ({ project, onDragStart, onClick }) => (
 const Projects = () => {
   const projects = useStore(state => state.projects)
   const addProject = useStore(state => state.addProject)
+  const updateProject = useStore(state => state.updateProject)
+  const removeProject = useStore(state => state.removeProject)
   const updateProjectStatus = useStore(state => state.updateProjectStatus)
   
   const [draggedId, setDraggedId] = useState(null)
   const [selectedProject, setSelectedProject] = useState(null)
   const [dragOverCol, setDragOverCol] = useState(null)
   
-  // Form State
+  // Modal states
   const [showAddModal, setShowAddModal] = useState(false)
-  const [newProject, setNewProject] = useState({
+  const [isEditing, setIsEditing] = useState(false)
+  const [formData, setFormData] = useState({
     name: '',
     client: '',
     type: 'سكني',
@@ -69,7 +72,6 @@ const Projects = () => {
 
   const handleDragOver = (e, colId) => {
     e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
     setDragOverCol(colId)
   }
 
@@ -86,22 +88,39 @@ const Projects = () => {
     setDragOverCol(null)
   }
 
+  const resetForm = () => {
+    setFormData({ name: '', client: '', type: 'سكني', budget: '', deadline: '', location: '', status: 'التصميم', progress: 0 })
+    setIsEditing(false)
+    setShowAddModal(false)
+  }
+
+  const handleOpenEdit = (project) => {
+    setFormData(project)
+    setIsEditing(true)
+    setShowAddModal(true)
+    setSelectedProject(null) // close detail modal if open
+  }
+
   const handleSaveProject = async (e) => {
     e.preventDefault()
-    if (!newProject.name || !newProject.client) return
-    await addProject(newProject)
-    toast.success('تم إنشاء المشروع بنجاح!')
-    setShowAddModal(false)
-    setNewProject({
-      name: '',
-      client: '',
-      type: 'سكني',
-      budget: '',
-      deadline: '',
-      location: '',
-      status: 'التصميم',
-      progress: 0
-    })
+    if (!formData.name || !formData.client) return
+    
+    if (isEditing) {
+      await updateProject(formData.id, formData)
+      toast.success('تم تحديث بيانات المشروع!')
+    } else {
+      await addProject(formData)
+      toast.success('تم إنشاء المشروع بنجاح!')
+    }
+    resetForm()
+  }
+
+  const handleDelete = async (id) => {
+    if (window.confirm('هل أنت متأكد من حذف هذا المشروع؟ لا يمكن التراجع عن هذا الإجراء.')) {
+      await removeProject(id)
+      toast.success('تم حذف المشروع')
+      setSelectedProject(null)
+    }
   }
 
   return (
@@ -109,10 +128,10 @@ const Projects = () => {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black mb-2 text-gray-900">لوحة <span className="text-gold-gradient">المشاريع</span></h1>
-          <p className="text-gray-900 font-black">اسحب وأفلت بطاقات المشروع لتحريكها بين مراحل العمل.</p>
+          <p className="text-gray-900 font-black">إدارة وتتبع سير العمل في مشاريعك الحالية.</p>
         </div>
         <button 
-          onClick={() => setShowAddModal(true)} 
+          onClick={() => { resetForm(); setShowAddModal(true); }} 
           className="px-8 py-3 bg-accent-gold text-white font-black rounded-xl flex items-center gap-2 shadow-lg shadow-accent-gold/20 hover:bg-accent-gold-dark transition-all"
         >
           <Plus size={20} /> مشروع جديد
@@ -136,7 +155,6 @@ const Projects = () => {
                 minHeight: '520px'
               }}
             >
-              {/* Column Header */}
               <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-white/50 rounded-t-2xl">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: col.color }} />
@@ -147,7 +165,6 @@ const Projects = () => {
                 </span>
               </div>
 
-              {/* Cards */}
               <div className="p-3 space-y-3">
                 <AnimatePresence>
                   {colProjects.map(project => (
@@ -170,7 +187,7 @@ const Projects = () => {
         })}
       </div>
 
-      {/* Add Project Modal */}
+      {/* Add/Edit Project Modal */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div
@@ -178,7 +195,7 @@ const Projects = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setShowAddModal(false)}
+            onClick={resetForm}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -188,8 +205,8 @@ const Projects = () => {
               onClick={e => e.stopPropagation()}
             >
               <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 className="text-xl font-black text-gray-900">إضافة مشروع جديد</h3>
-                <button onClick={() => setShowAddModal(false)} className="text-gray-700 hover:text-red-500 transition-colors">
+                <h3 className="text-xl font-black text-gray-900">{isEditing ? 'تعديل بيانات المشروع' : 'إضافة مشروع جديد'}</h3>
+                <button onClick={resetForm} className="text-gray-700 hover:text-red-500 transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -199,9 +216,8 @@ const Projects = () => {
                     <label className="block text-sm font-black text-gray-700 mb-2">اسم المشروع</label>
                     <input 
                       type="text" required
-                      placeholder="مثال: فيلا التجمع الخامس"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newProject.name} onChange={e => setNewProject({...newProject, name: e.target.value})}
+                      value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
                     />
                   </div>
                   <div>
@@ -209,14 +225,14 @@ const Projects = () => {
                     <input 
                       type="text" required
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newProject.client} onChange={e => setNewProject({...newProject, client: e.target.value})}
+                      value={formData.client} onChange={e => setFormData({...formData, client: e.target.value})}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-black text-gray-700 mb-2">النوع</label>
                     <select 
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newProject.type} onChange={e => setNewProject({...newProject, type: e.target.value})}
+                      value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}
                     >
                       <option>سكني</option>
                       <option>تجاري</option>
@@ -227,18 +243,16 @@ const Projects = () => {
                     <label className="block text-sm font-black text-gray-700 mb-2">الميزانية</label>
                     <input 
                       type="text"
-                      placeholder="١٥٠,٠٠٠ ج.م"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newProject.budget} onChange={e => setNewProject({...newProject, budget: e.target.value})}
+                      value={formData.budget} onChange={e => setFormData({...formData, budget: e.target.value})}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-black text-gray-700 mb-2">الموعد النهائي</label>
                     <input 
                       type="text"
-                      placeholder="٢٠ مايو ٢٠٢٦"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newProject.deadline} onChange={e => setNewProject({...newProject, deadline: e.target.value})}
+                      value={formData.deadline} onChange={e => setFormData({...formData, deadline: e.target.value})}
                     />
                   </div>
                   <div className="col-span-2">
@@ -246,12 +260,12 @@ const Projects = () => {
                     <input 
                       type="text"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newProject.location} onChange={e => setNewProject({...newProject, location: e.target.value})}
+                      value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})}
                     />
                   </div>
                 </div>
                 <button type="submit" className="w-full bg-accent-gold text-white font-black py-4 rounded-xl shadow-xl shadow-accent-gold/20 hover:bg-accent-gold-dark transition-all mt-4">
-                  إنشاء المشروع الآن
+                  {isEditing ? 'حفظ التعديلات' : 'إنشاء المشروع الآن'}
                 </button>
               </form>
             </motion.div>
@@ -281,9 +295,17 @@ const Projects = () => {
                   <h2 className="text-2xl font-black text-gray-900 mb-1">{selectedProject.name}</h2>
                   <p className="text-sm font-black text-accent-gold">{selectedProject.status}</p>
                 </div>
-                <button onClick={() => setSelectedProject(null)} className="text-gray-700 hover:text-red-500 transition-colors">
-                  <X size={24} />
-                </button>
+                <div className="flex gap-2">
+                  <button onClick={() => handleOpenEdit(selectedProject)} className="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all" title="تعديل">
+                    <Edit3 size={20} />
+                  </button>
+                  <button onClick={() => handleDelete(selectedProject.id)} className="p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all" title="حذف">
+                    <Trash2 size={20} />
+                  </button>
+                  <button onClick={() => setSelectedProject(null)} className="p-2.5 text-gray-700 hover:text-gray-900 transition-colors">
+                    <X size={24} />
+                  </button>
+                </div>
               </div>
 
               <div className="p-8 grid grid-cols-2 gap-8 bg-white text-gray-900">
@@ -300,31 +322,6 @@ const Projects = () => {
                     <p className="font-black text-gray-900 text-lg">{val}</p>
                   </div>
                 ))}
-              </div>
-
-              <div className="px-8 pb-8 bg-white">
-                <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-4">نقل إلى مرحلة أخرى</p>
-                <div className="flex gap-3 flex-wrap">
-                  {COLUMNS.map(col => (
-                    <button
-                      key={col.id}
-                      disabled={selectedProject.status === col.id}
-                      onClick={() => {
-                        updateProjectStatus(selectedProject.id, col.id)
-                        toast.success(`تم نقل المشروع إلى ${col.id}`)
-                        setSelectedProject(null)
-                      }}
-                      className="px-5 py-2.5 rounded-xl text-sm font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed border border-gray-100"
-                      style={{
-                        background: selectedProject.status === col.id ? col.bg : 'rgba(0,0,0,0.02)',
-                        color: col.color,
-                        borderColor: selectedProject.status === col.id ? col.color + '40' : ''
-                      }}
-                    >
-                      {col.label}
-                    </button>
-                  ))}
-                </div>
               </div>
             </motion.div>
           </motion.div>

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { FileText, CheckCircle, XCircle, Clock, Search, Filter, MoreVertical, Check, X, Printer, X as CloseIcon, Plus } from 'lucide-react'
+import { FileText, CheckCircle, XCircle, Clock, Search, Filter, MoreVertical, Check, X, Printer, X as CloseIcon, Plus, Trash2, Edit3 } from 'lucide-react'
 import { useReactToPrint } from 'react-to-print'
 import { InvoiceTemplate } from '../components/InvoiceTemplate'
 import { useStore } from '../store/useStore'
@@ -10,19 +10,34 @@ const Quotations = () => {
   const quotes = useStore(state => state.quotes)
   const updateQuoteStatus = useStore(state => state.updateQuoteStatus)
   const addQuote = useStore(state => state.addQuote)
+  const updateQuote = useStore(state => state.updateQuote)
+  const removeQuote = useStore(state => state.removeQuote)
 
-  // Invoice Printing State
+  // States
   const [selectedQuote, setSelectedQuote] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
   const invoiceRef = useRef()
 
-  const [newQuote, setNewQuote] = useState({
+  const [formData, setFormData] = useState({
     client: '',
     type: 'تشطيب كامل',
     value: '',
     status: 'approved',
     date: new Intl.DateTimeFormat('ar-EG', { dateStyle: 'long' }).format(new Date())
   })
+
+  const resetForm = () => {
+    setFormData({ client: '', type: 'تشطيب كامل', value: '', status: 'approved', date: new Intl.DateTimeFormat('ar-EG', { dateStyle: 'long' }).format(new Date()) })
+    setIsEditing(false)
+    setShowAddModal(false)
+  }
+
+  const handleOpenEdit = (quote) => {
+    setFormData(quote)
+    setIsEditing(true)
+    setShowAddModal(true)
+  }
 
   const handlePrint = useReactToPrint({
     content: () => invoiceRef.current,
@@ -36,14 +51,26 @@ const Quotations = () => {
 
   const handleSaveQuote = async (e) => {
     e.preventDefault()
-    if (!newQuote.client || !newQuote.value) return
-    await addQuote({
-      ...newQuote,
-      id: `QT-${Math.floor(1000 + Math.random() * 9000)}`
-    })
-    toast.success('تم إنشاء عرض السعر بنجاح!')
-    setShowAddModal(false)
-    setNewQuote({ client: '', type: 'تشطيب كامل', value: '', status: 'approved', date: new Intl.DateTimeFormat('ar-EG', { dateStyle: 'long' }).format(new Date()) })
+    if (!formData.client || !formData.value) return
+    
+    if (isEditing) {
+      await updateQuote(formData.id, formData)
+      toast.success('تم تحديث عرض السعر!')
+    } else {
+      await addQuote({
+        ...formData,
+        id: `QT-${Math.floor(1000 + Math.random() * 9000)}`
+      })
+      toast.success('تم إنشاء عرض السعر بنجاح!')
+    }
+    resetForm()
+  }
+
+  const handleDelete = async (id) => {
+    if (window.confirm('هل أنت متأكد من حذف هذا العرض؟')) {
+      await removeQuote(id)
+      toast.success('تم حذف العرض')
+    }
   }
 
   const StatusBadge = ({ status }) => {
@@ -60,10 +87,10 @@ const Quotations = () => {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black mb-2 text-gray-900">عروض <span className="text-gold-gradient">الأسعار</span></h1>
-          <p className="text-gray-900 font-black">متابعة طلبات التسعير الواردة واعتمادها.</p>
+          <p className="text-gray-900 font-black">إدارة واعتماد طلبات التسعير والفواتير.</p>
         </div>
         <button 
-          onClick={() => setShowAddModal(true)} 
+          onClick={() => { resetForm(); setShowAddModal(true); }} 
           className="px-8 py-3 bg-accent-gold text-white font-black rounded-xl flex items-center gap-2 shadow-lg shadow-accent-gold/20 hover:bg-accent-gold-dark transition-all"
         >
           <Plus size={18} /> إنشاء عرض سعر
@@ -80,9 +107,6 @@ const Quotations = () => {
               className="w-full bg-white border border-gray-300 rounded-xl py-2.5 pr-12 pl-4 text-sm focus:border-accent-gold outline-none font-black text-gray-900"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-xl text-sm font-black text-gray-900 hover:bg-white transition-all">
-            <Filter size={16} /> تصفية
-          </button>
         </div>
 
         <div className="overflow-x-auto">
@@ -94,12 +118,12 @@ const Quotations = () => {
                 <th className="p-6 font-black">التاريخ</th>
                 <th className="p-6 font-black">القيمة التقديرية</th>
                 <th className="p-6 font-black">الحالة</th>
-                <th className="p-6"></th>
+                <th className="p-6 font-black text-left">التحكم</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {quotes.map((q, i) => (
-                <tr key={i} className="hover:bg-gray-50 transition-all group cursor-pointer">
+                <tr key={i} className="hover:bg-gray-50 transition-all group">
                   <td className="p-6 font-black text-accent-gold">{q.id}</td>
                   <td className="p-6">
                     <p className="font-black text-gray-900">{q.client}</p>
@@ -109,25 +133,19 @@ const Quotations = () => {
                   <td className="p-6 font-black text-gray-900">{q.value}</td>
                   <td className="p-6"><StatusBadge status={q.status} /></td>
                   <td className="p-6 text-left">
-                    {q.status === 'pending' ? (
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => handleUpdateStatus(q.id, 'approved')} className="p-2 bg-green-500/10 text-green-600 hover:bg-green-600 hover:text-white rounded-lg transition-all" title="قبول">
-                          <Check size={18} />
-                        </button>
-                        <button onClick={() => handleUpdateStatus(q.id, 'rejected')} className="p-2 bg-red-500/10 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all" title="رفض">
-                          <X size={18} />
-                        </button>
-                      </div>
-                    ) : q.status === 'approved' ? (
-                      <button 
-                        onClick={() => setSelectedQuote(q)}
-                        className="px-4 py-2 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-white rounded-xl font-black text-xs transition-all flex items-center gap-2 mr-auto border border-accent-gold/20"
-                      >
-                        <Printer size={16} /> الفاتورة
-                      </button>
-                    ) : (
-                      <button className="text-gray-700 hover:text-accent-gold transition-colors"><MoreVertical size={18} /></button>
-                    )}
+                    <div className="flex justify-end gap-2 items-center">
+                      {q.status === 'pending' && (
+                        <>
+                          <button onClick={() => handleUpdateStatus(q.id, 'approved')} className="p-2 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-lg transition-all"><Check size={18} /></button>
+                          <button onClick={() => handleUpdateStatus(q.id, 'rejected')} className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all"><X size={18} /></button>
+                        </>
+                      )}
+                      {q.status === 'approved' && (
+                        <button onClick={() => setSelectedQuote(q)} className="p-2 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-white rounded-lg transition-all"><Printer size={18} /></button>
+                      )}
+                      <button onClick={() => handleOpenEdit(q)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Edit3 size={18} /></button>
+                      <button onClick={() => handleDelete(q.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={18} /></button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -139,7 +157,7 @@ const Quotations = () => {
         </div>
       </div>
 
-      {/* Add Quotation Modal */}
+      {/* Add/Edit Quotation Modal */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div
@@ -147,7 +165,7 @@ const Quotations = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setShowAddModal(false)}
+            onClick={resetForm}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -157,8 +175,8 @@ const Quotations = () => {
               onClick={e => e.stopPropagation()}
             >
               <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 className="text-xl font-black text-gray-900">إنشاء عرض سعر جديد</h3>
-                <button onClick={() => setShowAddModal(false)} className="text-gray-700 hover:text-red-500 transition-colors">
+                <h3 className="text-xl font-black text-gray-900">{isEditing ? 'تعديل عرض السعر' : 'إنشاء عرض سعر جديد'}</h3>
+                <button onClick={resetForm} className="text-gray-700 hover:text-red-500 transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -168,7 +186,7 @@ const Quotations = () => {
                   <input 
                     type="text" required
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                    value={newQuote.client} onChange={e => setNewQuote({...newQuote, client: e.target.value})}
+                    value={formData.client} onChange={e => setFormData({...formData, client: e.target.value})}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -176,9 +194,8 @@ const Quotations = () => {
                     <label className="block text-sm font-black text-gray-700 mb-2">القيمة التقديرية</label>
                     <input 
                       type="text" required
-                      placeholder="٧٥,٠٠٠ ج.م"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newQuote.value} onChange={e => setNewQuote({...newQuote, value: e.target.value})}
+                      value={formData.value} onChange={e => setFormData({...formData, value: e.target.value})}
                     />
                   </div>
                   <div>
@@ -186,12 +203,12 @@ const Quotations = () => {
                     <input 
                       type="text"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newQuote.type} onChange={e => setNewQuote({...newQuote, type: e.target.value})}
+                      value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}
                     />
                   </div>
                 </div>
                 <button type="submit" className="w-full bg-accent-gold text-white font-black py-4 rounded-xl shadow-xl shadow-accent-gold/20 hover:bg-accent-gold-dark transition-all mt-4">
-                  إصدار عرض السعر
+                  {isEditing ? 'حفظ التعديلات' : 'إصدار عرض السعر'}
                 </button>
               </form>
             </motion.div>
@@ -203,36 +220,21 @@ const Quotations = () => {
       {selectedQuote && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-gray-300 shadow-2xl">
-            {/* Modal Header */}
             <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
               <h3 className="text-xl font-black text-gray-900">معاينة الفاتورة</h3>
               <div className="flex gap-3">
-                <button 
-                  onClick={handlePrint}
-                  className="px-6 py-2 bg-accent-gold text-white font-black rounded-xl flex items-center gap-2 hover:bg-accent-gold-dark transition-all shadow-lg shadow-accent-gold/20"
-                >
-                  <Printer size={18} /> طباعة / تصدير PDF
+                <button onClick={handlePrint} className="px-6 py-2 bg-accent-gold text-white font-black rounded-xl flex items-center gap-2 hover:bg-accent-gold-dark transition-all shadow-lg shadow-accent-gold/20">
+                  <Printer size={18} /> طباعة
                 </button>
-                <button 
-                  onClick={() => setSelectedQuote(null)}
-                  className="p-2 text-gray-700 hover:text-red-500 hover:bg-gray-50 rounded-xl transition-all"
-                >
-                  <CloseIcon size={24} />
-                </button>
+                <button onClick={() => setSelectedQuote(null)} className="p-2 text-gray-700 hover:text-red-500 rounded-xl transition-all"><CloseIcon size={24} /></button>
               </div>
             </div>
-            
-            {/* Modal Body (Scrollable Print Preview) */}
             <div className="flex-1 overflow-y-auto p-8 bg-gray-100 flex justify-center print-container">
-              {/* The actual component to print */}
-              <div className="shadow-2xl overflow-hidden print-area">
-                <InvoiceTemplate ref={invoiceRef} quote={selectedQuote} />
-              </div>
+              <div className="shadow-2xl overflow-hidden print-area"><InvoiceTemplate ref={invoiceRef} quote={selectedQuote} /></div>
             </div>
           </div>
         </div>
       )}
-
     </div>
   )
 }

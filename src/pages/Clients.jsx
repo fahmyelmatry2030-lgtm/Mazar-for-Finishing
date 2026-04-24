@@ -1,16 +1,20 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, UserPlus, Mail, Phone, MoreVertical, Star, X } from 'lucide-react'
+import { Search, UserPlus, Mail, Phone, MoreVertical, Star, X, Trash2, Edit3 } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import toast from 'react-hot-toast'
 
 const Clients = () => {
   const [selectedClient, setSelectedClient] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  
   const clients = useStore(state => state.clients)
   const addClient = useStore(state => state.addClient)
+  const updateClient = useStore(state => state.updateClient)
+  const removeClient = useStore(state => state.removeClient)
 
-  const [newClient, setNewClient] = useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
@@ -19,13 +23,41 @@ const Clients = () => {
     rating: 5
   })
 
+  const resetForm = () => {
+    setFormData({ name: '', email: '', phone: '', projects: '٠', status: 'محتمل', rating: 5 })
+    setIsEditing(false)
+    setShowAddModal(false)
+  }
+
+  const handleOpenEdit = (client, e) => {
+    if (e) e.stopPropagation()
+    setFormData(client)
+    setIsEditing(true)
+    setShowAddModal(true)
+    setSelectedClient(null)
+  }
+
   const handleSaveClient = async (e) => {
     e.preventDefault()
-    if (!newClient.name || !newClient.phone) return
-    await addClient(newClient)
-    toast.success('تمت إضافة العميل بنجاح!')
-    setShowAddModal(false)
-    setNewClient({ name: '', email: '', phone: '', projects: '٠', status: 'محتمل', rating: 5 })
+    if (!formData.name || !formData.phone) return
+    
+    if (isEditing) {
+      await updateClient(formData.id, formData)
+      toast.success('تم تحديث بيانات العميل!')
+    } else {
+      await addClient(formData)
+      toast.success('تمت إضافة العميل بنجاح!')
+    }
+    resetForm()
+  }
+
+  const handleDelete = async (id, e) => {
+    if (e) e.stopPropagation()
+    if (window.confirm('هل أنت متأكد من حذف هذا العميل؟ لا يمكن التراجع.')) {
+      await removeClient(id)
+      toast.success('تم حذف العميل')
+      setSelectedClient(null)
+    }
   }
   
   return (
@@ -36,7 +68,7 @@ const Clients = () => {
           <p className="text-gray-900 font-black">إدارة العلاقات مع العملاء الحاليين والمحتملين.</p>
         </div>
         <button 
-          onClick={() => setShowAddModal(true)} 
+          onClick={() => { resetForm(); setShowAddModal(true); }} 
           className="px-8 py-3 bg-accent-gold text-white font-black rounded-xl flex items-center gap-2 shadow-lg shadow-accent-gold/20 hover:bg-accent-gold-dark transition-all"
         >
           <UserPlus size={20} className="ml-2" /> إضافة عميل جديد
@@ -53,11 +85,6 @@ const Clients = () => {
               className="w-full bg-white border border-gray-300 rounded-xl py-2.5 pr-12 pl-4 text-sm focus:border-accent-gold outline-none font-black text-gray-900"
             />
           </div>
-          <div className="flex gap-4">
-            <button className="text-sm font-black text-gray-900 hover:text-accent-gold transition-colors">الكل</button>
-            <button className="text-sm font-black text-gray-700 hover:text-accent-gold transition-colors">نشط</button>
-            <button className="text-sm font-black text-gray-700 hover:text-accent-gold transition-colors">محتمل</button>
-          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -68,8 +95,7 @@ const Clients = () => {
                 <th className="p-6 font-black">معلومات التواصل</th>
                 <th className="p-6 text-center font-black">المشاريع</th>
                 <th className="p-6 font-black">الحالة</th>
-                <th className="p-6 font-black">التقييم</th>
-                <th className="p-6"></th>
+                <th className="p-6 font-black text-left">التحكم</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -104,34 +130,30 @@ const Clients = () => {
                     <span className="font-black text-accent-gold">{client.projects}</span>
                   </td>
                   <td className="p-6">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black border ${
                       client.status === 'نشط' ? 'bg-blue-500/10 text-blue-600 border-blue-500/20' : 
                       client.status === 'محتمل' ? 'bg-orange-500/10 text-orange-600 border-orange-500/20' : 'bg-green-500/10 text-green-600 border-green-500/20'
                     }`}>
                       {client.status}
                     </span>
                   </td>
-                  <td className="p-6">
-                    <div className="flex gap-1 text-accent-gold">
-                      {[...Array(5)].map((_, idx) => (
-                        <Star key={idx} size={14} fill={idx < client.rating ? 'currentColor' : 'none'} />
-                      ))}
-                    </div>
-                  </td>
                   <td className="p-6 text-left">
-                    <button className="text-gray-700 hover:text-accent-gold"><MoreVertical size={18} /></button>
+                    <div className="flex justify-end gap-2">
+                      <button onClick={(e) => handleOpenEdit(client, e)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Edit3 size={18} /></button>
+                      <button onClick={(e) => handleDelete(client.id, e)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={18} /></button>
+                    </div>
                   </td>
                 </motion.tr>
               ))}
               {clients.length === 0 && (
-                <tr><td colSpan="6" className="p-10 text-center text-gray-900 font-black">لا يوجد عملاء مسجلين حالياً.</td></tr>
+                <tr><td colSpan="5" className="p-10 text-center text-gray-900 font-black">لا يوجد عملاء مسجلين.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Add Client Modal */}
+      {/* Add/Edit Client Modal */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div
@@ -139,7 +161,7 @@ const Clients = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[4000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setShowAddModal(false)}
+            onClick={resetForm}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -149,8 +171,8 @@ const Clients = () => {
               onClick={e => e.stopPropagation()}
             >
               <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h3 className="text-xl font-black text-gray-900">إضافة عميل جديد</h3>
-                <button onClick={() => setShowAddModal(false)} className="text-gray-700 hover:text-red-500 transition-colors">
+                <h3 className="text-xl font-black text-gray-900">{isEditing ? 'تعديل بيانات العميل' : 'إضافة عميل جديد'}</h3>
+                <button onClick={resetForm} className="text-gray-700 hover:text-red-500 transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -160,7 +182,7 @@ const Clients = () => {
                   <input 
                     type="text" required
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                    value={newClient.name} onChange={e => setNewClient({...newClient, name: e.target.value})}
+                    value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -169,7 +191,7 @@ const Clients = () => {
                     <input 
                       type="text" required
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newClient.phone} onChange={e => setNewClient({...newClient, phone: e.target.value})}
+                      value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})}
                     />
                   </div>
                   <div>
@@ -177,7 +199,7 @@ const Clients = () => {
                     <input 
                       type="email"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                      value={newClient.email} onChange={e => setNewClient({...newClient, email: e.target.value})}
+                      value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
                     />
                   </div>
                 </div>
@@ -185,7 +207,7 @@ const Clients = () => {
                   <label className="block text-sm font-black text-gray-700 mb-2">حالة العميل</label>
                   <select 
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 font-black outline-none focus:border-accent-gold transition-all text-gray-900"
-                    value={newClient.status} onChange={e => setNewClient({...newClient, status: e.target.value})}
+                    value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}
                   >
                     <option>محتمل</option>
                     <option>نشط</option>
@@ -193,75 +215,9 @@ const Clients = () => {
                   </select>
                 </div>
                 <button type="submit" className="w-full bg-accent-gold text-white font-black py-4 rounded-xl shadow-xl shadow-accent-gold/20 hover:bg-accent-gold-dark transition-all mt-4">
-                  حفظ بيانات العميل
+                  {isEditing ? 'حفظ التعديلات' : 'حفظ بيانات العميل'}
                 </button>
               </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Client Detail Modal */}
-      <AnimatePresence>
-        {selectedClient && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[3000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setSelectedClient(null)}
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white w-full max-w-xl rounded-2xl overflow-hidden shadow-2xl border border-gray-100"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="p-8 border-b border-gray-100 flex justify-between items-start bg-gray-50">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-accent-gold/20 text-accent-gold flex items-center justify-center font-black text-2xl">
-                    {selectedClient.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-black text-gray-900">{selectedClient.name}</h2>
-                    <p className="text-sm text-accent-gold font-black mt-1">عميل {selectedClient.status}</p>
-                  </div>
-                </div>
-                <button onClick={() => setSelectedClient(null)} className="p-2 text-gray-700 hover:text-red-500 transition-colors">
-                  <X size={24} />
-                </button>
-              </div>
-              
-              <div className="p-8 space-y-6 bg-white">
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-2 flex items-center gap-2"><Mail size={16} className="text-accent-gold"/> البريد الإلكتروني</p>
-                    <p className="font-black text-gray-900" dir="ltr">{selectedClient.email || 'غير محدد'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-2 flex items-center gap-2"><Phone size={16} className="text-accent-gold"/> رقم الهاتف</p>
-                    <p className="font-black text-gray-900" dir="ltr">{selectedClient.phone}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-2 flex items-center gap-2"><Star size={16} className="text-accent-gold"/> التقييم</p>
-                    <div className="flex gap-1 text-accent-gold">
-                      {[...Array(5)].map((_, idx) => (
-                        <Star key={idx} size={16} fill={idx < selectedClient.rating ? 'currentColor' : 'none'} />
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-2">إجمالي المشاريع</p>
-                    <p className="font-black text-2xl text-accent-gold">{selectedClient.projects}</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 pt-6 border-t border-gray-100">
-                  <button className="flex-1 bg-accent-gold text-white font-black py-3 rounded-xl hover:bg-accent-gold-dark transition-all">إرسال رسالة</button>
-                  <button className="flex-1 border border-gray-200 hover:border-accent-gold hover:text-accent-gold text-gray-900 font-black py-3 rounded-xl transition-all">تعديل الملف</button>
-                </div>
-              </div>
             </motion.div>
           </motion.div>
         )}
