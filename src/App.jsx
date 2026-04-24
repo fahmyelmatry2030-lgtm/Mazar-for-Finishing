@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { MessageCircle, ArrowUp } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
@@ -23,6 +23,12 @@ import ContactPage from './pages/public/ContactPage'
 function App() {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const isAuthenticated = useStore(state => state.isAuthenticated)
+  const loading = useStore(state => state.loading)
+  const initializeData = useStore(state => state.initializeData)
+
+  useEffect(() => {
+    initializeData()
+  }, [])
 
   // Protected Route Component
   const ProtectedRoute = ({ children }) => {
@@ -30,6 +36,23 @@ function App() {
       return <Navigate to="/login" replace />
     }
     return children
+  }
+
+  // Global loading screen
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center gap-6">
+        <div className="w-12 h-12 bg-accent-gold flex items-center justify-center rounded-xl">
+          <span className="text-bg-primary font-black text-xl">M</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-accent-gold animate-bounce" style={{ animationDelay: '0ms' }} />
+          <div className="w-2 h-2 rounded-full bg-accent-gold animate-bounce" style={{ animationDelay: '150ms' }} />
+          <div className="w-2 h-2 rounded-full bg-accent-gold animate-bounce" style={{ animationDelay: '300ms' }} />
+        </div>
+        <p className="text-text-secondary font-bold text-sm">جاري تحميل البيانات...</p>
+      </div>
+    )
   }
 
   return (
