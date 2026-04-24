@@ -151,6 +151,9 @@ function App() {
               </Suspense>
             </ProtectedRoute>
           } />
+
+          {/* 404 Catch All */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>
