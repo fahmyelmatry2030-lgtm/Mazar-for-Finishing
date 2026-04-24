@@ -1,6 +1,7 @@
 import React from 'react'
 import Services from '../../components/Services'
 import Process from '../../components/Process'
+import CostEstimator from '../../components/CostEstimator'
 import { motion } from 'framer-motion'
 
 const ServicesPage = () => {
@@ -19,6 +20,7 @@ const ServicesPage = () => {
       </div>
       <Services />
       <Process />
+      <CostEstimator />
     </div>
   )
 }

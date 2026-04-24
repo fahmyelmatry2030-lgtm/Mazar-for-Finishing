@@ -6,9 +6,17 @@ import {
   ArrowDownRight, 
   Download,
   CreditCard,
-  PieChart,
+  PieChart as PieChartIcon,
   Wallet
 } from 'lucide-react'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts'
+
+const distributionData = [
+  { name: 'تشطيبات سكنية', value: 65, color: '#D4AF37' },
+  { name: 'مشروعات تجارية', value: 20, color: '#3b82f6' },
+  { name: 'استشارات هندسية', value: 10, color: '#a855f7' },
+  { name: 'حلول ذكية', value: 5, color: '#22c55e' }
+]
 
 const FinanceCard = ({ label, value, trend, isPositive, icon: Icon }) => (
   <div className="glass-panel p-6 rounded-2xl border-white/5 hover:border-accent-gold/30 transition-all group">
@@ -42,7 +50,7 @@ const Financials = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <FinanceCard label="إجمالي الإيرادات" value="٨٤٢,٥٠٠ ج.م" trend="+14.2%" isPositive={true} icon={Wallet} />
         <FinanceCard label="إجمالي المصروفات" value="٣١٢,٤٠٠ ج.م" trend="+5.4%" isPositive={false} icon={CreditCard} />
-        <FinanceCard label="صافي الربح" value="٥٣٠,١٠٠ ج.م" trend="+18.7%" isPositive={true} icon={PieChart} />
+        <FinanceCard label="صافي الربح" value="٥٣٠,١٠٠ ج.م" trend="+18.7%" isPositive={true} icon={PieChartIcon} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -82,36 +90,45 @@ const Financials = () => {
         </div>
 
         {/* Expense Tracking & Distribution */}
-        <div className="glass-panel rounded-2xl p-8">
-          <h3 className="text-xl mb-8 font-bold">توزيع الإيرادات والمصروفات</h3>
-          <div className="space-y-8">
-            {[
-              { label: 'تشطيبات سكنية', percent: 65, color: 'accent-gold' },
-              { label: 'مشروعات تجارية', percent: 20, color: 'blue-500' },
-              { label: 'استشارات هندسية', percent: 10, color: 'purple-500' },
-              { label: 'حلول المنازل الذكية', percent: 5, color: 'green-500' }
-            ].map((cat, i) => (
-              <div key={i} className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-text-secondary font-bold">{cat.label}</span>
-                  <span className="font-black">{cat.percent}%</span>
-                </div>
-                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${cat.percent}%` }}
-                    transition={{ duration: 1, delay: i * 0.1 }}
-                    className={`h-full bg-${cat.color === 'accent-gold' ? 'accent-gold' : cat.color} rounded-full`}
-                  ></motion.div>
-                </div>
-              </div>
-            ))}
+        <div className="glass-panel rounded-2xl p-8 flex flex-col">
+          <h3 className="text-xl mb-4 font-bold">توزيع الإيرادات</h3>
+          
+          <div className="h-[300px] w-full flex-grow">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={distributionData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={80}
+                  outerRadius={110}
+                  paddingAngle={5}
+                  dataKey="value"
+                  stroke="none"
+                >
+                  {distributionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <RechartsTooltip 
+                  contentStyle={{ backgroundColor: '#1A1A1A', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', fontWeight: 'bold' }}
+                  itemStyle={{ color: '#fff' }}
+                  formatter={(value) => [`${value}%`, 'النسبة']}
+                />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36} 
+                  iconType="circle"
+                  formatter={(value) => <span className="text-text-secondary font-bold text-sm mr-2">{value}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
           
-          <div className="mt-12 p-6 bg-accent-gold/5 rounded-xl border border-accent-gold/20">
+          <div className="mt-8 p-6 bg-accent-gold/5 rounded-xl border border-accent-gold/20">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 rounded-full bg-accent-gold/20 flex items-center justify-center text-accent-gold">
-                <PieChart size={16} />
+                <PieChartIcon size={16} />
               </div>
               <p className="text-sm font-black text-accent-gold">تحليل الربحية</p>
             </div>
