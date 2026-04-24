@@ -20,20 +20,20 @@ const ProjectCard = ({ project, onDragStart, onClick }) => (
     draggable
     onDragStart={(e) => onDragStart(e, project.id)}
     onClick={onClick}
-    className="glass-panel p-5 rounded-xl border border-white/5 hover:border-accent-gold/30 cursor-grab active:cursor-grabbing group select-none transition-all"
+    className="bg-white shadow-sm border border-gray-200 p-5 rounded-xl border border-gray-200 hover:border-accent-gold/30 cursor-grab active:cursor-grabbing group select-none transition-all"
     style={{ backdropFilter: 'blur(10px)' }}
   >
     <div className="flex justify-between items-start mb-3">
-      <h4 className="font-black text-white group-hover:text-accent-gold transition-colors">{project.name}</h4>
-      <GripVertical size={16} className="text-text-secondary opacity-50 group-hover:opacity-100 transition-opacity" />
+      <h4 className="font-black text-gray-900 group-hover:text-accent-gold transition-colors">{project.name}</h4>
+      <GripVertical size={16} className="text-gray-500 opacity-50 group-hover:opacity-100 transition-opacity" />
     </div>
-    <p className="text-xs font-bold text-text-secondary mb-4">{project.client} · {project.type}</p>
+    <p className="text-xs font-bold text-gray-500 mb-4">{project.client} · {project.type}</p>
     
-    <div className="w-full h-1.5 bg-white/5 rounded-full mb-4">
+    <div className="w-full h-1.5 bg-gray-50 rounded-full mb-4">
       <div className="h-full bg-accent-gold rounded-full transition-all" style={{ width: `${project.progress}%` }} />
     </div>
 
-    <div className="grid grid-cols-2 gap-2 text-[11px] text-text-secondary font-bold">
+    <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-500 font-bold">
       <div className="flex items-center gap-1.5"><DollarSign size={12} className="text-accent-gold" />{project.budget}</div>
       <div className="flex items-center gap-1.5"><Calendar size={12} className="text-accent-gold" />{project.deadline}</div>
       <div className="flex items-center gap-1.5 col-span-2"><MapPin size={12} className="text-accent-gold" />{project.location}</div>
@@ -67,7 +67,7 @@ const Projects = () => {
       if (project && project.status !== colId) {
         updateProjectStatus(draggedId, colId)
         toast.success(`تم نقل "${project.name}" إلى ${colId}`, {
-          style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' },
+          style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(0,0,0,0.1)' },
           iconTheme: { primary: '#D4AF37', secondary: '#1A1A1A' }
         })
       }
@@ -88,7 +88,7 @@ const Projects = () => {
       location: 'غير محدد'
     })
     toast.success('تم إنشاء المشروع بنجاح!', {
-      style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
+      style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(0,0,0,0.1)' }
     })
   }
 
@@ -97,7 +97,7 @@ const Projects = () => {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black mb-2">لوحة <span className="text-gold-gradient">المشاريع</span></h1>
-          <p className="text-text-secondary font-medium">اسحب وأفلت بطاقات المشروع لتحريكها بين مراحل العمل.</p>
+          <p className="text-gray-500 font-medium">اسحب وأفلت بطاقات المشروع لتحريكها بين مراحل العمل.</p>
         </div>
         <button onClick={handleNewProject} className="btn-premium py-3 px-6 text-sm rounded-lg flex items-center gap-2">
           <Plus size={20} /> مشروع جديد
@@ -116,13 +116,13 @@ const Projects = () => {
               onDrop={(e) => handleDrop(e, col.id)}
               className="rounded-2xl transition-all duration-200"
               style={{
-                background: dragOverCol === col.id ? col.bg : 'rgba(255,255,255,0.02)',
-                border: `2px dashed ${dragOverCol === col.id ? col.color : 'rgba(255,255,255,0.06)'}`,
+                background: dragOverCol === col.id ? col.bg : 'rgba(0,0,0,0.02)',
+                border: `2px dashed ${dragOverCol === col.id ? col.color : 'rgba(0,0,0,0.06)'}`,
                 minHeight: '520px'
               }}
             >
               {/* Column Header */}
-              <div className="p-4 border-b border-white/5 flex justify-between items-center">
+              <div className="p-4 border-b border-gray-200 flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: col.color }} />
                   <span className="font-black text-sm uppercase tracking-wider">{col.label}</span>
@@ -145,7 +145,7 @@ const Projects = () => {
                   ))}
                 </AnimatePresence>
                 {colProjects.length === 0 && (
-                  <div className="text-center py-12 text-text-secondary">
+                  <div className="text-center py-12 text-gray-500">
                     <p className="text-sm font-bold">أفلت هنا</p>
                   </div>
                 )}
@@ -169,20 +169,20 @@ const Projects = () => {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="glass-panel w-full max-w-2xl rounded-2xl overflow-hidden shadow-premium"
+              className="bg-white shadow-sm border border-gray-200 w-full max-w-2xl rounded-2xl overflow-hidden shadow-premium"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-8 border-b border-white/5 flex justify-between items-start bg-bg-secondary">
+              <div className="p-8 border-b border-gray-200 flex justify-between items-start bg-white">
                 <div>
                   <h2 className="text-2xl font-black mb-1">{selectedProject.name}</h2>
                   <p className="text-sm font-bold text-accent-gold">{selectedProject.status}</p>
                 </div>
-                <button onClick={() => setSelectedProject(null)} className="p-2 text-text-secondary hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                <button onClick={() => setSelectedProject(null)} className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
                   <X size={24} />
                 </button>
               </div>
 
-              <div className="p-8 grid grid-cols-2 gap-6 bg-bg-primary">
+              <div className="p-8 grid grid-cols-2 gap-6 bg-gray-50">
                 {[
                   { label: 'العميل', val: selectedProject.client },
                   { label: 'النوع', val: selectedProject.type },
@@ -192,14 +192,14 @@ const Projects = () => {
                   { label: 'نسبة الإنجاز', val: `${selectedProject.progress}%` },
                 ].map(({ label, val }) => (
                   <div key={label}>
-                    <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-1">{label}</p>
-                    <p className="font-bold text-white">{val}</p>
+                    <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">{label}</p>
+                    <p className="font-bold text-gray-900">{val}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="px-8 pb-8 bg-bg-primary">
-                <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-3">نقل إلى مرحلة</p>
+              <div className="px-8 pb-8 bg-gray-50">
+                <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">نقل إلى مرحلة</p>
                 <div className="flex gap-3 flex-wrap">
                   {COLUMNS.map(col => (
                     <button
@@ -208,13 +208,13 @@ const Projects = () => {
                       onClick={() => {
                         updateProjectStatus(selectedProject.id, col.id)
                         toast.success(`تم نقل "${selectedProject.name}" إلى ${col.id}`, {
-                          style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
+                          style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(0,0,0,0.1)' }
                         })
                         setSelectedProject(null)
                       }}
                       className="px-4 py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                       style={{
-                        background: selectedProject.status === col.id ? col.bg : 'rgba(255,255,255,0.05)',
+                        background: selectedProject.status === col.id ? col.bg : 'rgba(0,0,0,0.05)',
                         color: col.color,
                         border: `1px solid ${col.color}30`
                       }}

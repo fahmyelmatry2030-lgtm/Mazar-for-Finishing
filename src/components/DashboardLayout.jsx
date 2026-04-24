@@ -18,7 +18,7 @@ import {
 const SidebarItem = ({ icon: Icon, label, to, active }) => (
   <Link 
     to={to} 
-    className={`flex items-center gap-4 px-6 py-4 transition-all ${active ? 'bg-accent-gold/10 text-accent-gold border-l-2 border-accent-gold' : 'text-text-secondary hover:text-white hover:bg-white/5'}`}
+    className={`flex items-center gap-4 px-6 py-4 transition-all ${active ? 'bg-accent-gold/10 text-accent-gold border-l-2 border-accent-gold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
   >
     <Icon size={20} />
     <span className="font-bold tracking-wide text-sm">{label}</span>
@@ -35,15 +35,15 @@ const DashboardLayout = ({ children }) => {
   }
 
   return (
-    <div className="flex h-screen bg-[#0f172a] overflow-hidden" dir="rtl">
+    <div className="flex h-screen bg-gray-50 overflow-hidden" dir="rtl">
       {/* Sidebar */}
-      <aside className="w-72 border-l border-white/5 flex flex-col bg-[#0f172a]">
+      <aside className="w-72 border-l border-gray-200 flex flex-col bg-gray-50">
         <div className="p-8 mb-4">
           <Link to="/" className="flex items-center gap-4 group">
             <div className="w-8 h-8 bg-accent-gold flex items-center justify-center rounded-sm">
               <span className="text-bg-primary font-black text-sm">M</span>
             </div>
-            <div className="text-xl font-black text-white" style={{ fontFamily: 'Tajawal, sans-serif' }}>
+            <div className="text-xl font-black text-gray-900" style={{ fontFamily: 'Tajawal, sans-serif' }}>
               مزار <span className="text-accent-gold text-xs font-normal">النظام الإداري</span>
             </div>
           </Link>
@@ -55,11 +55,11 @@ const DashboardLayout = ({ children }) => {
           <SidebarItem icon={Users} label="قاعدة العملاء" to="/dashboard/clients" active={location.pathname === '/dashboard/clients'} />
           <SidebarItem icon={FileText} label="عروض الأسعار" to="/dashboard/quotations" active={location.pathname === '/dashboard/quotations'} />
           <SidebarItem icon={BarChart3} label="التقارير المالية" to="/dashboard/finance" active={location.pathname === '/dashboard/finance'} />
-          <div className="mx-6 my-3 border-t border-white/5" />
+          <div className="mx-6 my-3 border-t border-gray-200" />
           <SidebarItem icon={Globe} label="إدارة الموقع" to="/dashboard/cms" active={location.pathname === '/dashboard/cms'} />
         </nav>
 
-        <div className="p-6 border-t border-glass-border">
+        <div className="p-6 border-t border-gray-200">
           <SidebarItem icon={Settings} label="الإعدادات" to="/dashboard/settings" active={location.pathname === '/dashboard/settings'} />
           <button onClick={handleLogout} className="flex items-center gap-4 px-6 py-4 w-full text-red-500 hover:bg-red-500/10 transition-all mt-2 rounded-lg">
             <LogOut size={20} />
@@ -71,22 +71,22 @@ const DashboardLayout = ({ children }) => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="h-20 border-b border-white/5 px-10 flex items-center justify-between bg-[#0f172a]/80 backdrop-blur-md z-20">
+        <header className="h-20 border-b border-gray-200 px-10 flex items-center justify-between bg-gray-50/80 backdrop-blur-md z-20">
           <div className="relative w-96">
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
             <input 
               type="text" 
               placeholder="ابحث عن مشروع أو عميل..." 
-              className="w-full bg-white/5 border border-glass-border rounded-full py-2.5 pr-12 pl-4 text-sm focus:border-accent-gold outline-none transition-all"
+              className="w-full bg-gray-50 border border-gray-200 rounded-full py-2.5 pr-12 pl-4 text-sm focus:border-accent-gold outline-none transition-all"
             />
           </div>
 
           <div className="flex items-center gap-6">
-            <button className="relative p-2 text-text-secondary hover:text-white transition-all">
+            <button className="relative p-2 text-gray-500 hover:text-gray-900 transition-all">
               <Bell size={22} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-accent-gold rounded-full"></span>
             </button>
-            <div className="flex items-center gap-3 pr-6 border-r border-glass-border">
+            <div className="flex items-center gap-3 pr-6 border-r border-gray-200">
               <div className="text-left">
                 <p className="text-sm font-bold">المهندس المسؤول</p>
                 <p className="text-[10px] uppercase text-accent-gold font-bold tracking-wider">كبير المصممين</p>
@@ -99,7 +99,7 @@ const DashboardLayout = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <section className="flex-1 overflow-y-auto p-10 bg-[#1e293b]">
+        <section className="flex-1 overflow-y-auto p-10 bg-gray-100">
           {children}
         </section>
       </main>

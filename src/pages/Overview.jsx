@@ -22,7 +22,7 @@ const revenueData = [
 ]
 
 const StatCard = ({ icon: Icon, label, value, trend, color }) => (
-  <div className="glass-panel p-6 rounded-2xl">
+  <div className="bg-white shadow-sm border border-gray-200 p-6 rounded-2xl">
     <div className="flex justify-between items-start mb-4">
       <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-500`}>
         <Icon size={24} />
@@ -31,7 +31,7 @@ const StatCard = ({ icon: Icon, label, value, trend, color }) => (
         <TrendingUp size={12} /> {trend}
       </span>
     </div>
-    <p className="text-text-secondary text-sm mb-1 font-bold">{label}</p>
+    <p className="text-gray-500 text-sm mb-1 font-bold">{label}</p>
     <h3 className="text-3xl font-black">{value}</h3>
   </div>
 )
@@ -66,7 +66,7 @@ const Overview = () => {
     <div className="space-y-10">
       <header>
         <h1 className="text-3xl font-black mb-2">أهلاً بك مجدداً، <span className="text-gold-gradient">يا بشمهندس</span></h1>
-        <p className="text-text-secondary font-medium">إليك ملخص سريع لأداء مشاريعك اليوم.</p>
+        <p className="text-gray-500 font-medium">إليك ملخص سريع لأداء مشاريعك اليوم.</p>
       </header>
 
       {/* Stats Grid */}
@@ -78,7 +78,7 @@ const Overview = () => {
       </div>
 
       {/* Revenue Chart */}
-      <div className="glass-panel rounded-2xl p-6 h-[400px]">
+      <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 h-[400px]">
         <h3 className="text-xl mb-6 font-bold">تحليل الإيرادات (آخر ٦ أشهر)</h3>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={revenueData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -88,14 +88,14 @@ const Overview = () => {
                 <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" tick={{fill: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 'bold'}} axisLine={false} tickLine={false} />
-            <YAxis stroke="rgba(255,255,255,0.3)" tick={{fill: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 'bold'}} axisLine={false} tickLine={false} tickFormatter={(value) => `${value / 1000}k`} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" vertical={false} />
+            <XAxis dataKey="name" stroke="rgba(0,0,0,0.3)" tick={{fill: 'rgba(0,0,0,0.5)', fontSize: 12, fontWeight: 'bold'}} axisLine={false} tickLine={false} />
+            <YAxis stroke="rgba(0,0,0,0.3)" tick={{fill: 'rgba(0,0,0,0.5)', fontSize: 12, fontWeight: 'bold'}} axisLine={false} tickLine={false} tickFormatter={(value) => `${value / 1000}k`} />
             <Tooltip 
-              contentStyle={{ backgroundColor: '#1A1A1A', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', fontWeight: 'bold' }}
+              contentStyle={{ backgroundColor: '#1A1A1A', borderColor: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontWeight: 'bold' }}
               itemStyle={{ color: '#D4AF37' }}
               formatter={(value) => [`${value.toLocaleString()} ج.م`, 'الإيرادات']}
-              labelStyle={{ color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}
+              labelStyle={{ color: 'rgba(0,0,0,0.5)', marginBottom: '8px' }}
             />
             <Area type="monotone" dataKey="revenue" stroke="#D4AF37" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
           </AreaChart>
@@ -104,15 +104,15 @@ const Overview = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Projects */}
-        <div className="lg:col-span-2 glass-panel rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-white/5 flex justify-between items-center">
+        <div className="lg:col-span-2 bg-white shadow-sm border border-gray-200 rounded-2xl overflow-hidden">
+          <div className="p-6 border-b border-gray-200 flex justify-between items-center">
             <h3 className="text-xl font-bold">آخر المشاريع</h3>
             <button className="text-accent-gold text-sm font-black">عرض الكل</button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-right">
               <thead>
-                <tr className="text-xs uppercase tracking-widest text-text-secondary border-b border-white/5">
+                <tr className="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-200">
                   <th className="p-6">اسم المشروع</th>
                   <th className="p-6">العميل</th>
                   <th className="p-6">الحالة</th>
@@ -120,16 +120,16 @@ const Overview = () => {
                   <th className="p-6"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-gray-200">
                 {[
                   { name: 'فيلا الرحاب', client: 'أحمد إبراهيم', status: 'تحت التنفيذ', budget: '١٢٠,٠٠٠ ج.م', color: 'blue' },
                   { name: 'مكتب أونيكس', client: 'شركة مودرن تك', status: 'مرحلة التصميم', budget: '٤٥,٠٠٠ ج.م', color: 'purple' },
                   { name: 'بنتهاوس زايد', client: 'سارة كمال', status: 'مرحلة التشطيب', budget: '٨٥,٠٠٠ ج.م', color: 'orange' },
                   { name: 'لوفت جاردينيا', client: 'يوسف علي', status: 'مكتمل', budget: '٣٢,٠٠٠ ج.م', color: 'green' }
                 ].map((project, i) => (
-                  <tr key={i} className="hover:bg-white/5 transition-all group">
+                  <tr key={i} className="hover:bg-gray-50 transition-all group">
                     <td className="p-6 font-bold">{project.name}</td>
-                    <td className="p-6 text-text-secondary font-medium">{project.client}</td>
+                    <td className="p-6 text-gray-500 font-medium">{project.client}</td>
                     <td className="p-6">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-${project.color}-500/10 text-${project.color}-500`}>
                         {project.status}
@@ -137,7 +137,7 @@ const Overview = () => {
                     </td>
                     <td className="p-6 font-bold">{project.budget}</td>
                     <td className="p-6 text-left">
-                      <button className="text-text-secondary hover:text-white transition-colors"><MoreVertical size={18} /></button>
+                      <button className="text-gray-500 hover:text-gray-900 transition-colors"><MoreVertical size={18} /></button>
                     </td>
                   </tr>
                 ))}
@@ -147,7 +147,7 @@ const Overview = () => {
         </div>
 
         {/* Activity Feed */}
-        <div className="glass-panel rounded-2xl p-6">
+        <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
           <h3 className="text-xl mb-6 font-bold">نشاط مباشر</h3>
           <div className="space-y-6">
             {[
@@ -162,7 +162,7 @@ const Overview = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium leading-relaxed">{activity.text}</p>
-                  <p className="text-[10px] text-text-secondary uppercase tracking-widest mt-1 font-bold">{activity.time}</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">{activity.time}</p>
                 </div>
               </div>
             ))}
@@ -186,7 +186,7 @@ const Overview = () => {
         .text-purple-500 { color: #a855f7; }
       `}} />
       {/* To-Do List */}
-      <div className="glass-panel rounded-2xl p-6">
+      <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold">مهامي اليوم</h3>
           <span className="text-xs font-black text-accent-gold bg-accent-gold/10 px-3 py-1 rounded-full">
@@ -201,7 +201,7 @@ const Overview = () => {
             onChange={e => setNewTodo(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && addTodo()}
             placeholder="أضف مهمة جديدة..."
-            className="flex-1 bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-accent-gold outline-none transition-colors placeholder:text-text-secondary"
+            className="flex-1 bg-gray-50 border border-gray-300 rounded-xl py-3 px-4 text-sm font-bold focus:border-accent-gold outline-none transition-colors placeholder:text-gray-500"
           />
           <button onClick={addTodo} className="p-3 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-bg-primary rounded-xl transition-all">
             <Plus size={20} />
@@ -219,7 +219,7 @@ const Overview = () => {
               className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
                 todo.done 
                   ? 'bg-green-500/5 border-green-500/20 opacity-60' 
-                  : 'bg-white/3 border-white/5 hover:border-white/10'
+                  : 'bg-white/3 border-gray-200 hover:border-gray-300'
               }`}
             >
               <button
@@ -228,18 +228,18 @@ const Overview = () => {
                   todo.done ? 'bg-green-500 border-green-500' : 'border-white/20 hover:border-accent-gold'
                 }`}
               >
-                {todo.done && <CheckCircle2 size={12} className="text-white" />}
+                {todo.done && <CheckCircle2 size={12} className="text-gray-900" />}
               </button>
-              <span className={`flex-1 text-sm font-bold ${todo.done ? 'line-through text-text-secondary' : ''}`}>
+              <span className={`flex-1 text-sm font-bold ${todo.done ? 'line-through text-gray-500' : ''}`}>
                 {todo.text}
               </span>
-              <button onClick={() => deleteTodo(todo.id)} className="p-1.5 text-text-secondary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all">
+              <button onClick={() => deleteTodo(todo.id)} className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all">
                 <Trash2 size={14} />
               </button>
             </motion.div>
           ))}
           {todos.length === 0 && (
-            <p className="text-center text-text-secondary font-bold py-8 text-sm">✓ لا توجد مهام معلقة. أحسنت صنعا!</p>
+            <p className="text-center text-gray-500 font-bold py-8 text-sm">✓ لا توجد مهام معلقة. أحسنت صنعا!</p>
           )}
         </div>
       </div>
