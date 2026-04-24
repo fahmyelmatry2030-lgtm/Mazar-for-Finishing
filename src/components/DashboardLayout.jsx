@@ -9,7 +9,8 @@ import {
   LogOut,
   Bell,
   Search,
-  FileText
+  FileText,
+  Globe
 } from 'lucide-react'
 
 const SidebarItem = ({ icon: Icon, label, to, active }) => (
@@ -53,6 +54,8 @@ const DashboardLayout = ({ children }) => {
           <SidebarItem icon={Users} label="قاعدة العملاء" to="/dashboard/clients" active={location.pathname === '/dashboard/clients'} />
           <SidebarItem icon={FileText} label="عروض الأسعار" to="/dashboard/quotations" active={location.pathname === '/dashboard/quotations'} />
           <SidebarItem icon={BarChart3} label="التقارير المالية" to="/dashboard/finance" active={location.pathname === '/dashboard/finance'} />
+          <div className="mx-6 my-3 border-t border-white/5" />
+          <SidebarItem icon={Globe} label="إدارة الموقع" to="/dashboard/cms" active={location.pathname === '/dashboard/cms'} />
         </nav>
 
         <div className="p-6 border-t border-glass-border">

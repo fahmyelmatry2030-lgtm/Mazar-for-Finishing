@@ -13,6 +13,7 @@ import Financials from './pages/Financials'
 import Settings from './pages/Settings'
 import Quotations from './pages/Quotations'
 import Login from './pages/Login'
+import CMS from './pages/CMS'
 
 import Home from './pages/public/Home'
 import ServicesPage from './pages/public/ServicesPage'
@@ -73,6 +74,7 @@ function App() {
                 <Route path="/quotations" element={<Quotations />} />
                 <Route path="/finance" element={<Financials />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/cms" element={<CMS />} />
               </Routes>
               </DashboardLayout>
             </ProtectedRoute>

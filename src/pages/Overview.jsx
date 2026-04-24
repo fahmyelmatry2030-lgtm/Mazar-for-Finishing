@@ -1,13 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { 
   TrendingUp, 
   Clock, 
   CheckCircle2, 
   AlertCircle,
-  MoreVertical
+  MoreVertical,
+  Plus,
+  Trash2
 } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useStore } from '../store/useStore'
 
 const revenueData = [
   { name: 'يناير', revenue: 150000 },
@@ -34,6 +37,31 @@ const StatCard = ({ icon: Icon, label, value, trend, color }) => (
 )
 
 const Overview = () => {
+  const projects = useStore(state => state.projects)
+  const quotes = useStore(state => state.quotes)
+  const clients = useStore(state => state.clients)
+
+  const activeProjects = projects.filter(p => p.status !== 'التسليم').length
+  const pendingQuotes = quotes.filter(q => q.status === 'pending').length
+  const totalClients = clients.length
+
+  // To-Do State
+  const [todos, setTodos] = useState([
+    { id: 1, text: 'مراجعة عروض الأسعار المعلقة', done: false },
+    { id: 2, text: 'متابعة توريد خامات بنتهاوس جولد', done: false },
+    { id: 3, text: 'جدولة زيارة ميدانية لفيلا الرحاب', done: true },
+  ])
+  const [newTodo, setNewTodo] = useState('')
+
+  const addTodo = () => {
+    if (!newTodo.trim()) return
+    setTodos(prev => [...prev, { id: Date.now(), text: newTodo.trim(), done: false }])
+    setNewTodo('')
+  }
+
+  const toggleTodo = (id) => setTodos(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
+  const deleteTodo = (id) => setTodos(prev => prev.filter(t => t.id !== id))
+
   return (
     <div className="space-y-10">
       <header>
@@ -43,9 +71,9 @@ const Overview = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard icon={Clock} label="المشاريع النشطة" value="١٢" trend="+20%" color="blue" />
-        <StatCard icon={CheckCircle2} label="مكتملة" value="٤٨" trend="+12%" color="green" />
-        <StatCard icon={AlertCircle} label="عروض سعر معلقة" value="٠٧" trend="-5%" color="orange" />
+        <StatCard icon={Clock} label="المشاريع النشطة" value={activeProjects.toString()} trend="+20%" color="blue" />
+        <StatCard icon={CheckCircle2} label="إجمالي العملاء" value={totalClients.toString()} trend="+12%" color="green" />
+        <StatCard icon={AlertCircle} label="عروض سعر معلقة" value={pendingQuotes.toString()} trend="-5%" color="orange" />
         <StatCard icon={TrendingUp} label="إجمالي الإيرادات" value="٤٢٠ ألف" trend="+8%" color="yellow" />
       </div>
 
@@ -157,6 +185,65 @@ const Overview = () => {
         .bg-purple-500\\/10 { background-color: rgba(168, 85, 247, 0.1); }
         .text-purple-500 { color: #a855f7; }
       `}} />
+      {/* To-Do List */}
+      <div className="glass-panel rounded-2xl p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold">مهامي اليوم</h3>
+          <span className="text-xs font-black text-accent-gold bg-accent-gold/10 px-3 py-1 rounded-full">
+            {todos.filter(t => !t.done).length} متبقية
+          </span>
+        </div>
+
+        {/* Add new todo */}
+        <div className="flex gap-3 mb-6">
+          <input
+            value={newTodo}
+            onChange={e => setNewTodo(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addTodo()}
+            placeholder="أضف مهمة جديدة..."
+            className="flex-1 bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm font-bold focus:border-accent-gold outline-none transition-colors placeholder:text-text-secondary"
+          />
+          <button onClick={addTodo} className="p-3 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-bg-primary rounded-xl transition-all">
+            <Plus size={20} />
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {todos.map(todo => (
+            <motion.div
+              key={todo.id}
+              layout
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
+                todo.done 
+                  ? 'bg-green-500/5 border-green-500/20 opacity-60' 
+                  : 'bg-white/3 border-white/5 hover:border-white/10'
+              }`}
+            >
+              <button
+                onClick={() => toggleTodo(todo.id)}
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                  todo.done ? 'bg-green-500 border-green-500' : 'border-white/20 hover:border-accent-gold'
+                }`}
+              >
+                {todo.done && <CheckCircle2 size={12} className="text-white" />}
+              </button>
+              <span className={`flex-1 text-sm font-bold ${todo.done ? 'line-through text-text-secondary' : ''}`}>
+                {todo.text}
+              </span>
+              <button onClick={() => deleteTodo(todo.id)} className="p-1.5 text-text-secondary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all">
+                <Trash2 size={14} />
+              </button>
+            </motion.div>
+          ))}
+          {todos.length === 0 && (
+            <p className="text-center text-text-secondary font-bold py-8 text-sm">✓ لا توجد مهام معلقة. أحسنت صنعا!</p>
+          )}
+        </div>
+      </div>
+
     </div>
   )
 }
