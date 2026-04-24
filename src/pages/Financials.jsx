@@ -7,9 +7,13 @@ import {
   Download,
   CreditCard,
   PieChart as PieChartIcon,
-  Wallet
+  Wallet,
+  Plus,
+  Trash2
 } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts'
+import { useStore } from '../store/useStore'
+import { useState } from 'react'
 
 const distributionData = [
   { name: 'تشطيبات سكنية', value: 65, color: '#D4AF37' },
@@ -33,13 +37,55 @@ const FinanceCard = ({ label, value, trend, isPositive, icon: Icon }) => (
   </div>
 )
 
+const parseCurrency = (str) => {
+  if (typeof str === 'number') return str
+  if (!str) return 0
+  // Convert Arabic numerals to English numerals first
+  const englishStr = str.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+  return Number(englishStr.replace(/[^0-9]/g, ''))
+}
+
+const formatCurrency = (num) => {
+  return new Intl.NumberFormat('ar-EG').format(num) + ' ج.م'
+}
+
 const Financials = () => {
+  const quotes = useStore(state => state.quotes)
+  const expenses = useStore(state => state.expenses)
+  const addExpense = useStore(state => state.addExpense)
+  const deleteExpense = useStore(state => state.deleteExpense)
+
+  const [desc, setDesc] = useState('')
+  const [amount, setAmount] = useState('')
+  const [category, setCategory] = useState('أجور')
+
+  const handleAddExpense = async (e) => {
+    e.preventDefault()
+    if (!desc || !amount) return
+    await addExpense({
+      description: desc,
+      amount: Number(amount),
+      category,
+      date: new Intl.DateTimeFormat('ar-EG', { dateStyle: 'long' }).format(new Date())
+    })
+    setDesc('')
+    setAmount('')
+  }
+
+  // Calculate Totals
+  const totalRevenue = quotes
+    .filter(q => q.status === 'approved')
+    .reduce((sum, q) => sum + parseCurrency(q.value), 0)
+    
+  const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0)
+  const netProfit = totalRevenue - totalExpenses
+
   return (
     <div className="space-y-10">
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black mb-2">التقارير <span className="text-gold-gradient">المالية</span></h1>
-          <p className="text-text-secondary font-medium">متابعة الإيرادات والمصروفات وصافي أرباح المشاريع.</p>
+          <p className="text-text-secondary font-medium">متابعة الإيرادات والمصروفات وصافي الأرباح الفعلية.</p>
         </div>
         <button className="flex items-center gap-2 px-6 py-3 glass-panel rounded-lg text-sm font-bold hover:text-accent-gold transition-all">
           <Download size={18} className="ml-2" /> تصدير التقرير
@@ -48,44 +94,71 @@ const Financials = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <FinanceCard label="إجمالي الإيرادات" value="٨٤٢,٥٠٠ ج.م" trend="+14.2%" isPositive={true} icon={Wallet} />
-        <FinanceCard label="إجمالي المصروفات" value="٣١٢,٤٠٠ ج.م" trend="+5.4%" isPositive={false} icon={CreditCard} />
-        <FinanceCard label="صافي الربح" value="٥٣٠,١٠٠ ج.م" trend="+18.7%" isPositive={true} icon={PieChartIcon} />
+        <FinanceCard label="إجمالي الإيرادات" value={formatCurrency(totalRevenue)} trend="+14.2%" isPositive={true} icon={Wallet} />
+        <FinanceCard label="إجمالي المصروفات" value={formatCurrency(totalExpenses)} trend="+5.4%" isPositive={false} icon={CreditCard} />
+        <FinanceCard label="صافي الربح" value={formatCurrency(netProfit)} trend="+18.7%" isPositive={true} icon={PieChartIcon} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Recent Transactions */}
+        {/* Expenses List & Form */}
         <div className="glass-panel rounded-2xl p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h3 className="text-xl font-bold">البيان الشهري (أبريل)</h3>
-            <span className="text-xs font-black text-accent-gold bg-accent-gold/10 px-3 py-1 rounded-full uppercase tracking-wider">محدث لحظياً</span>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold">سجل المصروفات</h3>
+            <span className="text-xs font-black text-red-500 bg-red-500/10 px-3 py-1 rounded-full uppercase tracking-wider">{expenses.length} عملية</span>
           </div>
-          <div className="space-y-6">
-            {[
-              { type: 'Income', label: 'فيلا الرحاب - المرحلة ٢', date: '٢٤ أبريل ٢٠٢٦', amount: '+٤٥,٠٠٠ ج.م', color: 'green' },
-              { type: 'Expense', label: 'مورد الرخام (إيطاليا)', date: '٢٢ أبريل ٢٠٢٦', amount: '-١٢,٥٠٠ ج.م', color: 'red' },
-              { type: 'Income', label: 'بنتهاوس زايد - دفعة نهائية', date: '٢٠ أبريل ٢٠٢٦', amount: '+٣٢,٠٠٠ ج.م', color: 'green' },
-              { type: 'Expense', label: 'أجور العمالة - أسبوع ١٦', date: '١٨ أبريل ٢٠٢٦', amount: '-٨,٤٠٠ ج.م', color: 'red' },
-              { type: 'Income', label: 'دفعة تعاقد مكتب أونيكس', date: '١٥ أبريل ٢٠٢٦', amount: '+١٥,٠٠٠ ج.م', color: 'green' }
-            ].map((t, i) => (
-              <div key={i} className="flex justify-between items-center group">
+
+          <form onSubmit={handleAddExpense} className="flex gap-2 mb-8 bg-black/40 p-4 rounded-xl border border-white/5">
+            <input 
+              type="text" 
+              placeholder="البيان (مثال: أجور عمال)" 
+              value={desc} onChange={e => setDesc(e.target.value)}
+              className="flex-1 bg-transparent border-none text-sm outline-none font-bold placeholder:text-white/30"
+              required 
+            />
+            <input 
+              type="number" 
+              placeholder="المبلغ" 
+              value={amount} onChange={e => setAmount(e.target.value)}
+              className="w-24 bg-transparent border-none text-sm outline-none font-bold placeholder:text-white/30 text-left"
+              required 
+              dir="ltr"
+            />
+            <button type="submit" className="p-2 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-bg-primary rounded-lg transition-colors">
+              <Plus size={18} />
+            </button>
+          </form>
+
+          <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+            {expenses.map((expense) => (
+              <div key={expense.id} className="flex justify-between items-center group p-3 hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-white/5">
                 <div className="flex gap-4 items-center">
-                  <div className={`p-2 rounded-lg bg-${t.color === 'green' ? 'green' : 'red'}-500/10 text-${t.color === 'green' ? 'green' : 'red'}-500`}>
+                  <div className="p-2 rounded-lg bg-red-500/10 text-red-500">
                     <DollarSign size={18} />
                   </div>
                   <div>
-                    <p className="font-bold group-hover:text-accent-gold transition-colors">{t.label}</p>
-                    <p className="text-[10px] text-text-secondary uppercase tracking-widest font-black mt-0.5">{t.date}</p>
+                    <p className="font-bold">{expense.description}</p>
+                    <div className="flex gap-2 mt-1">
+                      <span className="text-[10px] text-text-secondary uppercase tracking-widest font-black">{expense.date}</span>
+                      <span className="text-[10px] text-accent-gold uppercase tracking-widest font-black bg-accent-gold/10 px-2 rounded-full">{expense.category}</span>
+                    </div>
                   </div>
                 </div>
-                <p className={`font-black ${t.color === 'green' ? 'text-green-500' : 'text-red-500'}`}>{t.amount}</p>
+                <div className="flex items-center gap-4">
+                  <p className="font-black text-red-500" dir="ltr">- {formatCurrency(expense.amount)}</p>
+                  <button onClick={() => deleteExpense(expense.id)} className="text-text-secondary hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
             ))}
+            {expenses.length === 0 && (
+              <p className="text-center text-text-secondary font-bold py-8 text-sm">لا توجد مصروفات مسجلة.</p>
+            )}
           </div>
           
-          <div className="mt-10 pt-6 border-t border-white/5 flex justify-between items-center">
-            <p className="text-sm font-bold text-text-secondary">إجمالي دخل الشهر</p>
-            <p className="text-xl font-black text-green-500">+٩٢,٠٠٠ ج.م</p>
+          <div className="mt-6 pt-6 border-t border-white/5 flex justify-between items-center">
+            <p className="text-sm font-bold text-text-secondary">إجمالي المصروفات</p>
+            <p className="text-xl font-black text-red-500">{formatCurrency(totalExpenses)}</p>
           </div>
         </div>
 

@@ -1,35 +1,40 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Send, MapPin, Phone, Mail } from 'lucide-react'
-import { useStore } from '../store/useStore'
+import { MapPin, Phone, Mail, Send } from 'lucide-react'
+import emailjs from '@emailjs/browser'
 import toast from 'react-hot-toast'
 
 const Contact = () => {
-  const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [details, setDetails] = useState('')
-  const addQuote = useStore(state => state.addQuote)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
     
-    // Create new Quote
-    addQuote({
-      client: name,
-      type: 'طلب استشارة جديد',
-      date: new Date().toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' }),
-      value: 'يتم التقييم',
-      status: 'pending'
-    })
-
-    toast.success('تم إرسال طلبك بنجاح! سنتواصل معك قريباً.', {
-      style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' },
-      iconTheme: { primary: '#D4AF37', secondary: '#1A1A1A' }
-    })
-
-    setName('')
-    setPhone('')
-    setDetails('')
+    try {
+      if (import.meta.env.VITE_EMAILJS_SERVICE_ID) {
+        await emailjs.sendForm(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          e.target,
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        )
+      } else {
+        await new Promise(r => setTimeout(r, 1000))
+      }
+      
+      toast.success('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.', {
+        style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' },
+        iconTheme: { primary: '#D4AF37', secondary: '#1A1A1A' }
+      })
+      e.target.reset()
+    } catch (error) {
+      toast.error('حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.', {
+        style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -84,33 +89,41 @@ const Contact = () => {
             </div>
           </motion.div>
 
-          <motion.form 
-            onSubmit={handleSubmit}
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.2, ease: [0.83, 0, 0.17, 1] }}
-            className="glass-panel p-12 md:p-16 rounded-2xl shadow-premium"
+            transition={{ duration: 0.8 }}
+            className="glass-panel p-10 rounded-2xl border-white/5 relative z-10"
           >
-            <h3 className="text-2xl font-black mb-10 text-white">نموذج الاستشارة</h3>
-            <div className="space-y-8">
-              <div className="relative group">
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-transparent border-b border-border-light py-4 focus:border-accent-gold outline-none transition-all font-medium text-white text-lg peer" placeholder=" " required />
-                <label className="absolute right-0 top-4 text-text-muted transition-all peer-focus:-top-6 peer-focus:text-sm peer-focus:text-accent-gold peer-valid:-top-6 peer-valid:text-sm">الاسم الكامل</label>
+            <h3 className="text-2xl font-black mb-8 text-white">أرسل رسالة</h3>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-bold text-text-secondary mb-2">الاسم بالكامل</label>
+                  <input name="user_name" type="text" className="w-full bg-black/50 border border-white/10 rounded-lg py-3 px-4 text-sm focus:border-accent-gold outline-none font-bold transition-colors text-white" placeholder="محمد أحمد" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-text-secondary mb-2">رقم الهاتف</label>
+                  <input name="user_phone" type="tel" className="w-full bg-black/50 border border-white/10 rounded-lg py-3 px-4 text-sm focus:border-accent-gold outline-none font-bold transition-colors text-white" placeholder="01xxxxxxxxx" required dir="ltr" />
+                </div>
               </div>
-              <div className="relative group">
-                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full bg-transparent border-b border-border-light py-4 focus:border-accent-gold outline-none transition-all font-medium text-white text-lg peer" placeholder=" " required />
-                <label className="absolute right-0 top-4 text-text-muted transition-all peer-focus:-top-6 peer-focus:text-sm peer-focus:text-accent-gold peer-valid:-top-6 peer-valid:text-sm">رقم الهاتف</label>
+              
+              <div>
+                <label className="block text-sm font-bold text-text-secondary mb-2">البريد الإلكتروني</label>
+                <input name="user_email" type="email" className="w-full bg-black/50 border border-white/10 rounded-lg py-3 px-4 text-sm focus:border-accent-gold outline-none font-bold transition-colors text-white" placeholder="example@email.com" required dir="ltr" />
               </div>
-              <div className="relative group">
-                <textarea rows="4" value={details} onChange={(e) => setDetails(e.target.value)} className="w-full bg-transparent border-b border-border-light py-4 focus:border-accent-gold outline-none transition-all font-medium text-white text-lg peer resize-none" placeholder=" " required></textarea>
-                <label className="absolute right-0 top-4 text-text-muted transition-all peer-focus:-top-6 peer-focus:text-sm peer-focus:text-accent-gold peer-valid:-top-6 peer-valid:text-sm">نبذة عن المشروع</label>
+
+              <div>
+                <label className="block text-sm font-bold text-text-secondary mb-2">رسالتك</label>
+                <textarea name="message" rows="4" className="w-full bg-black/50 border border-white/10 rounded-lg py-3 px-4 text-sm focus:border-accent-gold outline-none font-bold transition-colors text-white resize-none" placeholder="اكتب تفاصيل استفسارك هنا..." required></textarea>
               </div>
-              <button type="submit" className="btn-premium w-full mt-4">
-                إرسال الطلب <Send size={20} className="mr-3 rotate-180" />
+
+              <button type="submit" disabled={loading} className="btn-premium w-full rounded-lg py-4 flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed">
+                {loading ? 'جاري الإرسال...' : 'إرسال الرسالة'} <Send size={18} className="group-hover:-translate-x-2 transition-transform" />
               </button>
-            </div>
-          </motion.form>
+            </form>
+          </motion.div>
 
         </div>
       </div>

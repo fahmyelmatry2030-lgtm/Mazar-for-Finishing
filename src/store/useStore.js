@@ -3,6 +3,7 @@ import {
   fetchProjects, addProjectFS, updateProjectFS,
   fetchClients, addClientFS,
   fetchQuotes, addQuoteFS, updateQuoteFS,
+  fetchExpenses, addExpenseFS, deleteExpenseFS,
   fetchWebContent, saveWebContentFS
 } from '../services/firestoreService'
 
@@ -19,13 +20,14 @@ export const useStore = create((set, get) => ({
     if (get().dataLoaded) return
     set({ loading: true })
     try {
-      const [projects, clients, quotes, webContent] = await Promise.all([
+      const [projects, clients, quotes, expenses, webContent] = await Promise.all([
         fetchProjects(),
         fetchClients(),
         fetchQuotes(),
+        fetchExpenses(),
         fetchWebContent(),
       ])
-      set({ projects, clients, quotes, webContent, loading: false, dataLoaded: true })
+      set({ projects, clients, quotes, expenses, webContent, loading: false, dataLoaded: true })
     } catch (err) {
       console.error('Firebase init error:', err)
       set({ loading: false, dataLoaded: true })
@@ -63,6 +65,17 @@ export const useStore = create((set, get) => ({
     set(state => ({
       quotes: state.quotes.map(q => q.id === id ? { ...q, status } : q)
     }))
+  },
+
+  // ── Expenses ──────────────────────────────────────────────────────────────
+  expenses: [],
+  addExpense: async (expense) => {
+    const id = await addExpenseFS(expense)
+    set(state => ({ expenses: [{ ...expense, id }, ...state.expenses] }))
+  },
+  deleteExpense: async (id) => {
+    await deleteExpenseFS(id)
+    set(state => ({ expenses: state.expenses.filter(e => e.id !== id) }))
   },
 
   // ── CMS Web Content ───────────────────────────────────────────────────────

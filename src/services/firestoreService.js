@@ -24,6 +24,11 @@ const DEFAULT_QUOTES = [
   { client: 'هدى عامر', type: 'لاندسكيب وحمام سباحة', date: '٢٠ أبريل ٢٠٢٦', value: '٣٢٠,٠٠٠ ج.م', status: 'rejected' },
   { client: 'كريم مجدي', type: 'تعديلات معمارية', date: '١٨ أبريل ٢٠٢٦', value: '٨٥,٠٠٠ ج.م', status: 'approved' },
 ]
+const DEFAULT_EXPENSES = [
+  { description: 'شراء خامات بورسلين', category: 'مواد بناء', amount: 45000, date: '٢٠ أبريل ٢٠٢٦' },
+  { description: 'أجور عمال التشطيب', category: 'أجور', amount: 12000, date: '٢٢ أبريل ٢٠٢٦' },
+  { description: 'حملة إعلانات فيسبوك', category: 'تسويق', amount: 3000, date: '٢٤ أبريل ٢٠٢٦' },
+]
 const DEFAULT_WEBCONTENT = {
   hero: {
     subtitle: 'مزار للتشطيبات المعمارية',
@@ -94,6 +99,16 @@ export const addQuoteFS = async (quote) => {
 }
 export const updateQuoteFS = async (id, data) => {
   await updateDoc(doc(db, 'quotes', id), data)
+}
+
+// ── Expenses ──────────────────────────────────────────────────────────────────
+export const fetchExpenses = () => fetchOrSeed('expenses', DEFAULT_EXPENSES)
+export const addExpenseFS = async (expense) => {
+  const docRef = await addDoc(collection(db, 'expenses'), { ...expense, createdAt: serverTimestamp() })
+  return docRef.id
+}
+export const deleteExpenseFS = async (id) => {
+  await deleteDoc(doc(db, 'expenses', id))
 }
 
 // ── Web Content (CMS) ─────────────────────────────────────────────────────────

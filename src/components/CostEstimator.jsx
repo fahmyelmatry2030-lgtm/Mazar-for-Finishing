@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calculator, Home, Building2, Briefcase, ArrowLeft, Send } from 'lucide-react'
 import { useStore } from '../store/useStore'
+import emailjs from '@emailjs/browser'
 import toast from 'react-hot-toast'
 
 const CostEstimator = () => {
@@ -11,6 +12,7 @@ const CostEstimator = () => {
   const [finishingLevel, setFinishingLevel] = useState('Luxury')
   const [contactName, setContactName] = useState('')
   const [contactPhone, setContactPhone] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
   const addQuote = useStore(state => state.addQuote)
 
@@ -28,26 +30,50 @@ const CostEstimator = () => {
 
   const estimatedTotal = area * levels[finishingLevel].pricePerSqm
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setIsSubmitting(true)
     
-    // Submit lead to Zustand store
-    addQuote({
-      client: contactName,
-      type: `${propertyType} - ${area}م² - ${finishingLevel}`,
-      date: new Date().toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' }),
-      value: `${estimatedTotal.toLocaleString('ar-EG')} ج.م`,
-      status: 'pending'
-    })
+    try {
+      // 1. Add to Zustand store
+      addQuote({
+        client: contactName,
+        type: `${propertyType} - ${area}م² - ${finishingLevel}`,
+        date: new Date().toLocaleDateString('ar-EG', { day: 'numeric', month: 'long', year: 'numeric' }),
+        value: `${estimatedTotal.toLocaleString('ar-EG')} ج.م`,
+        status: 'pending'
+      })
 
-    toast.success('تم إرسال طلبك بنجاح! سيقوم فريق المبيعات بالتواصل معك.', {
-      style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' },
-      iconTheme: { primary: '#D4AF37', secondary: '#1A1A1A' }
-    })
+      // 2. Send Email via EmailJS
+      if (import.meta.env.VITE_EMAILJS_SERVICE_ID) {
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          {
+            user_name: contactName,
+            user_phone: contactPhone,
+            property_type: propertyType,
+            area: area,
+            level: finishingLevel,
+            estimated_value: `${estimatedTotal.toLocaleString('ar-EG')} ج.م`
+          },
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        )
+      }
 
-    setStep(1)
-    setContactName('')
-    setContactPhone('')
+      toast.success('تم إرسال طلبك بنجاح! سيقوم فريق المبيعات بالتواصل معك.', {
+        style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' },
+        iconTheme: { primary: '#D4AF37', secondary: '#1A1A1A' }
+      })
+
+      setStep(1)
+      setContactName('')
+      setContactPhone('')
+    } catch (err) {
+      toast.error('حدث خطأ أثناء الإرسال، يرجى المحاولة لاحقاً.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -158,10 +184,10 @@ const CostEstimator = () => {
                 <div className="bg-bg-primary p-8 rounded-2xl border border-white/5 mb-10">
                   <h4 className="font-bold mb-6 text-center">أرسل التقدير للإدارة لطلب المعاينة</h4>
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    <input type="text" placeholder="الاسم الكامل" required value={contactName} onChange={e => setContactName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg p-4 font-bold outline-none focus:border-accent-gold" />
-                    <input type="tel" placeholder="رقم الهاتف" required value={contactPhone} onChange={e => setContactPhone(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg p-4 font-bold outline-none focus:border-accent-gold" />
-                    <button type="submit" className="w-full btn-premium py-4 rounded-lg flex justify-center items-center gap-2">
-                      إرسال الطلب للوحة التحكم <Send size={18} />
+                    <input name="user_name" type="text" placeholder="الاسم الكامل" required value={contactName} onChange={e => setContactName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg p-4 font-bold outline-none focus:border-accent-gold" />
+                    <input name="user_phone" type="tel" placeholder="رقم الهاتف" required value={contactPhone} onChange={e => setContactPhone(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg p-4 font-bold outline-none focus:border-accent-gold" />
+                    <button type="submit" disabled={isSubmitting} className="w-full btn-premium py-4 rounded-lg flex justify-center items-center gap-2 disabled:opacity-70">
+                      {isSubmitting ? 'جاري الإرسال...' : 'إرسال الطلب للوحة التحكم'} <Send size={18} />
                     </button>
                   </form>
                 </div>

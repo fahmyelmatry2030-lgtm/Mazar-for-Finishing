@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import SEO from '../components/SEO'
 import { motion } from 'framer-motion'
 import { Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../firebase'
 import toast from 'react-hot-toast'
 
@@ -25,13 +25,33 @@ const Login = () => {
       })
       navigate('/dashboard')
     } catch (err) {
+      // Auto-create account for the first time if not found
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+        try {
+          await createUserWithEmailAndPassword(auth, email, password)
+          toast.success('تم إنشاء حساب المدير بنجاح! جاري الدخول...', {
+            style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' },
+            iconTheme: { primary: '#D4AF37', secondary: '#1A1A1A' },
+          })
+          navigate('/dashboard')
+          return
+        } catch (createErr) {
+          toast.error(`مشكلة في Firebase: ${createErr.code}`, {
+            style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
+          })
+          setLoading(false)
+          return
+        }
+      }
+
+      console.error(err)
       const messages = {
         'auth/invalid-credential': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
         'auth/user-not-found': 'لا يوجد حساب بهذا البريد الإلكتروني.',
         'auth/wrong-password': 'كلمة المرور غير صحيحة.',
         'auth/too-many-requests': 'محاولات كثيرة. الرجاء الانتظار قليلاً.',
       }
-      toast.error(messages[err.code] || 'حدث خطأ. حاول مرة أخرى.', {
+      toast.error(messages[err.code] || `حدث خطأ. حاول مرة أخرى.`, {
         style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
       })
     } finally {
@@ -71,7 +91,7 @@ const Login = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@mazar.com"
+                placeholder="mazar@gmail.com"
                 className="w-full bg-black/50 border border-white/10 rounded-lg py-3 pr-12 pl-4 text-sm focus:border-accent-gold outline-none font-bold transition-colors"
                 required
                 dir="ltr"
