@@ -29,7 +29,7 @@ const Clients = () => {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black mb-2">قاعدة <span className="text-gold-gradient">العملاء</span></h1>
-          <p className="text-gray-500 font-medium">إدارة العلاقات مع العملاء الحاليين والمحتملين.</p>
+          <p className="text-gray-700 font-medium">إدارة العلاقات مع العملاء الحاليين والمحتملين.</p>
         </div>
         <button onClick={handleAddClient} className="btn-premium py-3 px-6 text-sm rounded-lg">
           <UserPlus size={20} className="ml-2" /> إضافة عميل جديد
@@ -39,24 +39,24 @@ const Clients = () => {
       <div className="bg-white shadow-sm border border-gray-200 rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
           <div className="relative w-80">
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-700" size={18} />
             <input 
               type="text" 
               placeholder="البحث عن العملاء..." 
-              className="w-full bg-primary border border-gray-300 rounded-lg py-2 pr-12 pl-4 text-sm focus:border-accent-gold outline-none font-bold"
+              className="w-full bg-primary border border-gray-300 rounded-lg py-2 pr-12 pl-4 text-sm focus:border-accent-gold outline-none font-black"
             />
           </div>
           <div className="flex gap-4">
-            <button className="text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">الكل</button>
-            <button className="text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">نشط</button>
-            <button className="text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">محتمل</button>
+            <button className="text-sm font-black text-gray-700 hover:text-gray-900 transition-colors">الكل</button>
+            <button className="text-sm font-black text-gray-700 hover:text-gray-900 transition-colors">نشط</button>
+            <button className="text-sm font-black text-gray-700 hover:text-gray-900 transition-colors">محتمل</button>
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-right">
             <thead>
-              <tr className="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-200">
+              <tr className="text-xs uppercase tracking-widest text-gray-700 border-b border-gray-200">
                 <th className="p-6">اسم العميل</th>
                 <th className="p-6">معلومات التواصل</th>
                 <th className="p-6 text-center">المشاريع</th>
@@ -77,7 +77,7 @@ const Clients = () => {
                 >
                   <td className="p-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-accent-gold/20 text-accent-gold flex items-center justify-center font-bold">
+                      <div className="w-10 h-10 rounded-full bg-accent-gold/20 text-accent-gold flex items-center justify-center font-black">
                         {client.name.split(' ').map(n => n[0]).join('')}
                       </div>
                       <span className="font-medium">{client.name}</span>
@@ -85,16 +85,16 @@ const Clients = () => {
                   </td>
                   <td className="p-6">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-2 text-sm text-gray-700">
                         <Mail size={14} /> {client.email}
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-2 text-sm text-gray-700">
                         <Phone size={14} /> {client.phone}
                       </div>
                     </div>
                   </td>
                   <td className="p-6 text-center">
-                    <span className="font-bold text-accent-gold">{client.projects}</span>
+                    <span className="font-black text-accent-gold">{client.projects}</span>
                   </td>
                   <td className="p-6">
                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
@@ -112,7 +112,7 @@ const Clients = () => {
                     </div>
                   </td>
                   <td className="p-6 text-right">
-                    <button className="text-gray-500 hover:text-gray-900"><MoreVertical size={18} /></button>
+                    <button className="text-gray-700 hover:text-gray-900"><MoreVertical size={18} /></button>
                   </td>
                 </motion.tr>
               ))}
@@ -142,10 +142,10 @@ const Clients = () => {
                   </div>
                   <div>
                     <h2 className="text-2xl font-black">{selectedClient.name}</h2>
-                    <p className="text-sm text-gray-500 font-bold mt-1">عميل {selectedClient.status}</p>
+                    <p className="text-sm text-gray-700 font-black mt-1">عميل {selectedClient.status}</p>
                   </div>
                 </div>
-                <button onClick={() => setSelectedClient(null)} className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                <button onClick={() => setSelectedClient(null)} className="p-2 text-gray-700 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -153,15 +153,15 @@ const Clients = () => {
               <div className="p-8 space-y-6 bg-gray-50">
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <p className="text-sm text-gray-500 font-bold mb-2 flex items-center gap-2"><Mail size={16}/> البريد الإلكتروني</p>
-                    <p className="font-bold text-sm" dir="ltr">{selectedClient.email}</p>
+                    <p className="text-sm text-gray-700 font-black mb-2 flex items-center gap-2"><Mail size={16}/> البريد الإلكتروني</p>
+                    <p className="font-black text-sm" dir="ltr">{selectedClient.email}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 font-bold mb-2 flex items-center gap-2"><Phone size={16}/> رقم الهاتف</p>
-                    <p className="font-bold text-sm" dir="ltr">{selectedClient.phone}</p>
+                    <p className="text-sm text-gray-700 font-black mb-2 flex items-center gap-2"><Phone size={16}/> رقم الهاتف</p>
+                    <p className="font-black text-sm" dir="ltr">{selectedClient.phone}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 font-bold mb-2 flex items-center gap-2"><Star size={16}/> التقييم</p>
+                    <p className="text-sm text-gray-700 font-black mb-2 flex items-center gap-2"><Star size={16}/> التقييم</p>
                     <div className="flex gap-1 text-accent-gold">
                       {[...Array(5)].map((_, idx) => (
                         <Star key={idx} size={16} fill={idx < selectedClient.rating ? 'currentColor' : 'none'} />
@@ -169,14 +169,14 @@ const Clients = () => {
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 font-bold mb-2">إجمالي المشاريع</p>
+                    <p className="text-sm text-gray-700 font-black mb-2">إجمالي المشاريع</p>
                     <p className="font-black text-2xl text-accent-gold">{selectedClient.projects}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-4 pt-6 border-t border-gray-200">
                   <button className="flex-1 btn-premium py-3 text-sm rounded-lg">إرسال رسالة</button>
-                  <button className="flex-1 border border-gray-300 hover:border-accent-gold hover:text-accent-gold text-gray-900 font-bold py-3 text-sm rounded-lg transition-colors">تعديل الملف</button>
+                  <button className="flex-1 border border-gray-300 hover:border-accent-gold hover:text-accent-gold text-gray-900 font-black py-3 text-sm rounded-lg transition-colors">تعديل الملف</button>
                 </div>
               </div>
             </motion.div>

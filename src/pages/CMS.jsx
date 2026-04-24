@@ -7,8 +7,8 @@ import toast from 'react-hot-toast'
 const SectionTab = ({ icon: Icon, label, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold transition-all ${
-      active ? 'bg-accent-gold text-bg-primary shadow-[0_0_15px_rgba(212,175,55,0.3)]' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+    className={`flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-black transition-all ${
+      active ? 'bg-accent-gold text-bg-primary shadow-[0_0_15px_rgba(212,175,55,0.3)]' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
     }`}
   >
     <Icon size={18} />
@@ -49,20 +49,20 @@ const CMS = () => {
     setShowAddPortfolio(false)
   }
 
-  const inputClass = "w-full bg-gray-50 border border-gray-300 rounded-xl py-3 px-4 font-bold text-sm focus:border-accent-gold outline-none transition-colors placeholder:text-gray-500"
+  const inputClass = "w-full bg-gray-50 border border-gray-300 rounded-xl py-3 px-4 font-black text-sm focus:border-accent-gold outline-none transition-colors placeholder:text-gray-700"
 
   return (
     <div className="space-y-8">
       <header>
         <h1 className="text-3xl font-black mb-2">إدارة <span className="text-gold-gradient">الموقع</span></h1>
-        <p className="text-gray-500 font-medium">تحكم في محتوى موقعك العام مباشرةً بدون مبرمج.</p>
+        <p className="text-gray-700 font-medium">تحكم في محتوى موقعك العام مباشرةً بدون مبرمج.</p>
       </header>
 
       {/* Live Preview Badge */}
       <div className="flex items-center gap-3 px-5 py-3 bg-white shadow-sm border border-gray-200 rounded-xl border-accent-gold/20 border w-fit">
         <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
         <Globe size={16} className="text-accent-gold" />
-        <span className="text-sm font-bold text-accent-gold">التغييرات تظهر مباشرة على الموقع</span>
+        <span className="text-sm font-black text-accent-gold">التغييرات تظهر مباشرة على الموقع</span>
       </div>
 
       {/* Tabs */}
@@ -81,33 +81,33 @@ const CMS = () => {
               <h3 className="text-lg font-black flex items-center gap-2"><Pencil size={18} className="text-accent-gold" /> تعديل محتوى الصفحة الرئيسية</h3>
               
               <div>
-                <label className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 block">العنوان الفرعي (Subtitle)</label>
+                <label className="text-xs font-black text-gray-700 uppercase tracking-widest mb-2 block">العنوان الفرعي (Subtitle)</label>
                 <input className={inputClass} value={heroForm.subtitle} onChange={e => setHeroForm({ ...heroForm, subtitle: e.target.value })} placeholder="مثال: مزار للتشطيبات المعمارية" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 block">الكلمة الذهبية (Highlight)</label>
+                  <label className="text-xs font-black text-gray-700 uppercase tracking-widest mb-2 block">الكلمة الذهبية (Highlight)</label>
                   <input className={inputClass} value={heroForm.titleHighlight} onChange={e => setHeroForm({ ...heroForm, titleHighlight: e.target.value })} placeholder="مثال: رؤيتك" />
                 </div>
                 <div>
-                  <label className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 block">باقي العنوان</label>
+                  <label className="text-xs font-black text-gray-700 uppercase tracking-widest mb-2 block">باقي العنوان</label>
                   <input className={inputClass} value={heroForm.titleNormal} onChange={e => setHeroForm({ ...heroForm, titleNormal: e.target.value })} placeholder="مثال: تتجسد في مساحات استثنائية" />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2 block">وصف الشركة</label>
+                <label className="text-xs font-black text-gray-700 uppercase tracking-widest mb-2 block">وصف الشركة</label>
                 <textarea rows={4} className={inputClass} value={heroForm.description} onChange={e => setHeroForm({ ...heroForm, description: e.target.value })} placeholder="اكتب وصف جذاب للشركة..." />
               </div>
 
               {/* Live Preview */}
               <div className="p-6 rounded-xl bg-gray-50 border border-gray-200">
-                <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">معاينة مباشرة</p>
-                <p className="text-xs font-bold text-accent-gold mb-2">{heroForm.subtitle}</p>
+                <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-4">معاينة مباشرة</p>
+                <p className="text-xs font-black text-accent-gold mb-2">{heroForm.subtitle}</p>
                 <h2 className="text-3xl font-black leading-tight mb-3">
                   <span className="text-gold-gradient">{heroForm.titleHighlight} </span>
                   {heroForm.titleNormal}
                 </h2>
-                <p className="text-sm text-gray-500 font-medium">{heroForm.description}</p>
+                <p className="text-sm text-gray-700 font-medium">{heroForm.description}</p>
               </div>
 
               <button onClick={handleSaveHero} className="btn-premium py-3 px-8 rounded-lg flex items-center gap-2">
@@ -139,7 +139,7 @@ const CMS = () => {
                     </div>
                   </div>
                   <div className="p-4">
-                    <p className="text-xs text-gray-500 font-medium">{item.description}</p>
+                    <p className="text-xs text-gray-700 font-medium">{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -156,30 +156,30 @@ const CMS = () => {
                   >
                     <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-white">
                       <h3 className="font-black text-lg">إضافة مشروع لمعرض الأعمال</h3>
-                      <button onClick={() => setShowAddPortfolio(false)} className="p-2 text-gray-500 hover:text-red-500 rounded-lg transition-colors"><X size={20} /></button>
+                      <button onClick={() => setShowAddPortfolio(false)} className="p-2 text-gray-700 hover:text-red-500 rounded-lg transition-colors"><X size={20} /></button>
                     </div>
                     <form onSubmit={handleAddPortfolio} className="p-6 space-y-4 bg-gray-50">
                       <div>
-                        <label className="text-xs font-black text-gray-500 mb-1 block">اسم المشروع *</label>
+                        <label className="text-xs font-black text-gray-700 mb-1 block">اسم المشروع *</label>
                         <input className={inputClass} value={newPortfolio.title} onChange={e => setNewPortfolio({ ...newPortfolio, title: e.target.value })} placeholder="فيلا أونيكس" required />
                       </div>
                       <div>
-                        <label className="text-xs font-black text-gray-500 mb-1 block">التصنيف</label>
+                        <label className="text-xs font-black text-gray-700 mb-1 block">التصنيف</label>
                         <input className={inputClass} value={newPortfolio.category} onChange={e => setNewPortfolio({ ...newPortfolio, category: e.target.value })} placeholder="تشطيب كامل، تصميم داخلي..." />
                       </div>
                       <div>
-                        <label className="text-xs font-black text-gray-500 mb-1 block flex items-center gap-1"><Image size={12} /> رابط الصورة (URL) *</label>
+                        <label className="text-xs font-black text-gray-700 mb-1 block flex items-center gap-1"><Image size={12} /> رابط الصورة (URL) *</label>
                         <input className={inputClass} value={newPortfolio.image} onChange={e => setNewPortfolio({ ...newPortfolio, image: e.target.value })} placeholder="https://..." required />
                       </div>
                       <div>
-                        <label className="text-xs font-black text-gray-500 mb-1 block">وصف المشروع</label>
+                        <label className="text-xs font-black text-gray-700 mb-1 block">وصف المشروع</label>
                         <textarea rows={3} className={inputClass} value={newPortfolio.description} onChange={e => setNewPortfolio({ ...newPortfolio, description: e.target.value })} placeholder="وصف مختصر للمشروع..." />
                       </div>
                       <div className="flex gap-3 pt-2">
                         <button type="submit" className="flex-1 btn-premium py-3 rounded-lg flex items-center justify-center gap-2">
                           <Check size={18} /> إضافة للمعرض
                         </button>
-                        <button type="button" onClick={() => setShowAddPortfolio(false)} className="px-6 py-3 border border-gray-300 rounded-lg font-bold text-gray-500 hover:text-gray-900 transition-colors">
+                        <button type="button" onClick={() => setShowAddPortfolio(false)} className="px-6 py-3 border border-gray-300 rounded-lg font-black text-gray-700 hover:text-gray-900 transition-colors">
                           إلغاء
                         </button>
                       </div>
@@ -201,14 +201,14 @@ const CMS = () => {
                   <div key={service.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                     <div className="w-10 h-10 rounded-lg bg-accent-gold/10 text-accent-gold flex items-center justify-center font-black text-lg">{service.id}</div>
                     <div className="flex-1">
-                      <p className="font-bold">{service.title}</p>
-                      <p className="text-xs text-gray-500 font-medium mt-0.5">{service.desc}</p>
+                      <p className="font-black">{service.title}</p>
+                      <p className="text-xs text-gray-700 font-medium mt-0.5">{service.desc}</p>
                     </div>
-                    <button className="p-2 text-gray-500 hover:text-accent-gold transition-colors"><Pencil size={16} /></button>
+                    <button className="p-2 text-gray-700 hover:text-accent-gold transition-colors"><Pencil size={16} /></button>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 font-bold text-center py-4 border border-gray-200 rounded-xl">
+              <p className="text-xs text-gray-700 font-black text-center py-4 border border-gray-200 rounded-xl">
                 ✦ تعديل الخدمات بشكل مفصل قادم في التحديث القادم
               </p>
             </div>

@@ -25,15 +25,15 @@ const ProjectCard = ({ project, onDragStart, onClick }) => (
   >
     <div className="flex justify-between items-start mb-3">
       <h4 className="font-black text-gray-900 group-hover:text-accent-gold transition-colors">{project.name}</h4>
-      <GripVertical size={16} className="text-gray-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+      <GripVertical size={16} className="text-gray-700 opacity-50 group-hover:opacity-100 transition-opacity" />
     </div>
-    <p className="text-xs font-bold text-gray-500 mb-4">{project.client} · {project.type}</p>
+    <p className="text-xs font-black text-gray-700 mb-4">{project.client} · {project.type}</p>
     
     <div className="w-full h-1.5 bg-gray-50 rounded-full mb-4">
       <div className="h-full bg-accent-gold rounded-full transition-all" style={{ width: `${project.progress}%` }} />
     </div>
 
-    <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-500 font-bold">
+    <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-700 font-black">
       <div className="flex items-center gap-1.5"><DollarSign size={12} className="text-accent-gold" />{project.budget}</div>
       <div className="flex items-center gap-1.5"><Calendar size={12} className="text-accent-gold" />{project.deadline}</div>
       <div className="flex items-center gap-1.5 col-span-2"><MapPin size={12} className="text-accent-gold" />{project.location}</div>
@@ -97,7 +97,7 @@ const Projects = () => {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black mb-2">لوحة <span className="text-gold-gradient">المشاريع</span></h1>
-          <p className="text-gray-500 font-medium">اسحب وأفلت بطاقات المشروع لتحريكها بين مراحل العمل.</p>
+          <p className="text-gray-700 font-medium">اسحب وأفلت بطاقات المشروع لتحريكها بين مراحل العمل.</p>
         </div>
         <button onClick={handleNewProject} className="btn-premium py-3 px-6 text-sm rounded-lg flex items-center gap-2">
           <Plus size={20} /> مشروع جديد
@@ -145,8 +145,8 @@ const Projects = () => {
                   ))}
                 </AnimatePresence>
                 {colProjects.length === 0 && (
-                  <div className="text-center py-12 text-gray-500">
-                    <p className="text-sm font-bold">أفلت هنا</p>
+                  <div className="text-center py-12 text-gray-700">
+                    <p className="text-sm font-black">أفلت هنا</p>
                   </div>
                 )}
               </div>
@@ -175,9 +175,9 @@ const Projects = () => {
               <div className="p-8 border-b border-gray-200 flex justify-between items-start bg-white">
                 <div>
                   <h2 className="text-2xl font-black mb-1">{selectedProject.name}</h2>
-                  <p className="text-sm font-bold text-accent-gold">{selectedProject.status}</p>
+                  <p className="text-sm font-black text-accent-gold">{selectedProject.status}</p>
                 </div>
-                <button onClick={() => setSelectedProject(null)} className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                <button onClick={() => setSelectedProject(null)} className="p-2 text-gray-700 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
                   <X size={24} />
                 </button>
               </div>
@@ -192,14 +192,14 @@ const Projects = () => {
                   { label: 'نسبة الإنجاز', val: `${selectedProject.progress}%` },
                 ].map(({ label, val }) => (
                   <div key={label}>
-                    <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">{label}</p>
-                    <p className="font-bold text-gray-900">{val}</p>
+                    <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-1">{label}</p>
+                    <p className="font-black text-gray-900">{val}</p>
                   </div>
                 ))}
               </div>
 
               <div className="px-8 pb-8 bg-gray-50">
-                <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">نقل إلى مرحلة</p>
+                <p className="text-xs font-black text-gray-700 uppercase tracking-widest mb-3">نقل إلى مرحلة</p>
                 <div className="flex gap-3 flex-wrap">
                   {COLUMNS.map(col => (
                     <button
@@ -212,7 +212,7 @@ const Projects = () => {
                         })
                         setSelectedProject(null)
                       }}
-                      className="px-4 py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="px-4 py-2 rounded-lg text-sm font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                       style={{
                         background: selectedProject.status === col.id ? col.bg : 'rgba(0,0,0,0.05)',
                         color: col.color,

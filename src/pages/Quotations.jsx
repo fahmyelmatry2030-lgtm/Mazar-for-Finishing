@@ -40,7 +40,7 @@ const Quotations = () => {
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-black mb-2">عروض <span className="text-gold-gradient">الأسعار</span></h1>
-          <p className="text-gray-500 font-medium">متابعة طلبات التسعير الواردة واعتمادها.</p>
+          <p className="text-gray-700 font-medium">متابعة طلبات التسعير الواردة واعتمادها.</p>
         </div>
         <button className="btn-premium py-3 px-6 text-sm rounded-lg flex items-center gap-2">
           <FileText size={18} /> إنشاء عرض سعر
@@ -50,14 +50,14 @@ const Quotations = () => {
       <div className="bg-white shadow-sm border border-gray-200 rounded-2xl overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
           <div className="relative w-80">
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-700" size={18} />
             <input 
               type="text" 
               placeholder="ابحث برقم العرض أو العميل..." 
-              className="w-full bg-primary border border-gray-300 rounded-lg py-2 pr-12 pl-4 text-sm focus:border-accent-gold outline-none font-bold"
+              className="w-full bg-primary border border-gray-300 rounded-lg py-2 pr-12 pl-4 text-sm focus:border-accent-gold outline-none font-black"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-bold text-gray-500 hover:text-gray-900 transition-all">
+          <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-black text-gray-700 hover:text-gray-900 transition-all">
             <Filter size={16} /> تصفية
           </button>
         </div>
@@ -65,7 +65,7 @@ const Quotations = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-right">
             <thead>
-              <tr className="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-200">
+              <tr className="text-xs uppercase tracking-widest text-gray-700 border-b border-gray-200">
                 <th className="p-6">رقم العرض</th>
                 <th className="p-6">العميل / المشروع</th>
                 <th className="p-6">التاريخ</th>
@@ -79,10 +79,10 @@ const Quotations = () => {
                 <tr key={i} className="hover:bg-gray-50 transition-all group cursor-pointer">
                   <td className="p-6 font-black text-accent-gold">{q.id}</td>
                   <td className="p-6">
-                    <p className="font-bold">{q.client}</p>
-                    <p className="text-sm text-gray-500">{q.type}</p>
+                    <p className="font-black">{q.client}</p>
+                    <p className="text-sm text-gray-700">{q.type}</p>
                   </td>
-                  <td className="p-6 text-sm font-bold">{q.date}</td>
+                  <td className="p-6 text-sm font-black">{q.date}</td>
                   <td className="p-6 font-black">{q.value}</td>
                   <td className="p-6"><StatusBadge status={q.status} /></td>
                   <td className="p-6 text-left">
@@ -98,12 +98,12 @@ const Quotations = () => {
                     ) : q.status === 'approved' ? (
                       <button 
                         onClick={() => setSelectedQuote(q)}
-                        className="px-4 py-2 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-bg-primary rounded font-bold text-sm transition-colors flex items-center gap-2 mr-auto"
+                        className="px-4 py-2 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-bg-primary rounded font-black text-sm transition-colors flex items-center gap-2 mr-auto"
                       >
                         <Printer size={16} /> الفاتورة
                       </button>
                     ) : (
-                      <button className="text-gray-500 hover:text-gray-900 transition-colors"><MoreVertical size={18} /></button>
+                      <button className="text-gray-700 hover:text-gray-900 transition-colors"><MoreVertical size={18} /></button>
                     )}
                   </td>
                 </tr>
@@ -119,17 +119,17 @@ const Quotations = () => {
           <div className="bg-white w-full max-w-5xl max-h-[90vh] rounded-2xl flex flex-col overflow-hidden border border-gray-300 shadow-2xl">
             {/* Modal Header */}
             <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-              <h3 className="text-xl font-bold">معاينة الفاتورة</h3>
+              <h3 className="text-xl font-black">معاينة الفاتورة</h3>
               <div className="flex gap-3">
                 <button 
                   onClick={handlePrint}
-                  className="px-6 py-2 bg-accent-gold text-bg-primary font-bold rounded-lg flex items-center gap-2 hover:bg-white transition-colors"
+                  className="px-6 py-2 bg-accent-gold text-bg-primary font-black rounded-lg flex items-center gap-2 hover:bg-white transition-colors"
                 >
                   <Printer size={18} /> طباعة / تصدير PDF
                 </button>
                 <button 
                   onClick={() => setSelectedQuote(null)}
-                  className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="p-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   <CloseIcon size={24} />
                 </button>

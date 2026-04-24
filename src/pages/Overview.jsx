@@ -12,26 +12,17 @@ import {
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useStore } from '../store/useStore'
 
-const revenueData = [
-  { name: 'يناير', revenue: 150000 },
-  { name: 'فبراير', revenue: 230000 },
-  { name: 'مارس', revenue: 180000 },
-  { name: 'أبريل', revenue: 380000 },
-  { name: 'مايو', revenue: 420000 },
-  { name: 'يونيو', revenue: 530000 },
-]
-
 const StatCard = ({ icon: Icon, label, value, trend, color }) => (
   <div className="bg-white shadow-sm border border-gray-200 p-6 rounded-2xl">
     <div className="flex justify-between items-start mb-4">
       <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-500`}>
         <Icon size={24} />
       </div>
-      <span className={`text-xs font-bold text-green-500 flex items-center gap-1`} dir="ltr">
+      <span className={`text-xs font-black text-green-500 flex items-center gap-1`} dir="ltr">
         <TrendingUp size={12} /> {trend}
       </span>
     </div>
-    <p className="text-gray-500 text-sm mb-1 font-bold">{label}</p>
+    <p className="text-gray-700 text-sm mb-1 font-black">{label}</p>
     <h3 className="text-3xl font-black">{value}</h3>
   </div>
 )
@@ -40,12 +31,40 @@ const Overview = () => {
   const projects = useStore(state => state.projects)
   const quotes = useStore(state => state.quotes)
   const clients = useStore(state => state.clients)
+  const expenses = useStore(state => state.expenses)
 
+  // Calculate Monthly Data Dynamically
+  const getMonthlyData = () => {
+    const months = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+    const data = months.map(m => ({ name: m, revenue: 0, expenses: 0 }))
+    
+    quotes.filter(q => q.status === 'approved' || q.status === 'مقبول').forEach(q => {
+      const monthMatch = months.find(m => q.date?.includes(m))
+      if (monthMatch) {
+        const idx = months.indexOf(monthMatch)
+        const val = typeof q.value === 'string' ? Number(q.value.replace(/[^0-9]/g, '')) : q.value
+        data[idx].revenue += (val || 0)
+      }
+    })
+
+    expenses.forEach(e => {
+      const monthMatch = months.find(m => e.date?.includes(m))
+      if (monthMatch) {
+        const idx = months.indexOf(monthMatch)
+        data[idx].expenses += Number(e.amount || 0)
+      }
+    })
+
+    const currentMonthIdx = new Date().getMonth()
+    return data.slice(Math.max(0, currentMonthIdx - 5), currentMonthIdx + 1)
+  }
+
+  const chartData = getMonthlyData()
   const activeProjects = projects.filter(p => p.status !== 'التسليم').length
-  const pendingQuotes = quotes.filter(q => q.status === 'pending').length
+  const pendingQuotes = quotes.filter(q => q.status === 'pending' || q.status === 'معلق').length
   const totalClients = clients.length
+  const totalRevenue = quotes.filter(q => q.status === 'approved' || q.status === 'مقبول').reduce((s, q) => s + (typeof q.value === 'string' ? Number(q.value.replace(/[^0-9]/g, '')) : (q.value || 0)), 0)
 
-  // To-Do State
   const [todos, setTodos] = useState([
     { id: 1, text: 'مراجعة عروض الأسعار المعلقة', done: false },
     { id: 2, text: 'متابعة توريد خامات بنتهاوس جولد', done: false },
@@ -66,7 +85,7 @@ const Overview = () => {
     <div className="space-y-10">
       <header>
         <h1 className="text-3xl font-black mb-2">أهلاً بك مجدداً، <span className="text-gold-gradient">يا بشمهندس</span></h1>
-        <p className="text-gray-500 font-medium">إليك ملخص سريع لأداء مشاريعك اليوم.</p>
+        <p className="text-gray-900 font-black text-lg">إليك ملخص سريع لأداء مشاريعك اليوم.</p>
       </header>
 
       {/* Stats Grid */}
@@ -74,95 +93,97 @@ const Overview = () => {
         <StatCard icon={Clock} label="المشاريع النشطة" value={activeProjects.toString()} trend="+20%" color="blue" />
         <StatCard icon={CheckCircle2} label="إجمالي العملاء" value={totalClients.toString()} trend="+12%" color="green" />
         <StatCard icon={AlertCircle} label="عروض سعر معلقة" value={pendingQuotes.toString()} trend="-5%" color="orange" />
-        <StatCard icon={TrendingUp} label="إجمالي الإيرادات" value="٤٢٠ ألف" trend="+8%" color="yellow" />
+        <StatCard icon={TrendingUp} label="إجمالي الإيرادات" value={new Intl.NumberFormat('ar-EG').format(totalRevenue) + ' ج.م'} trend="+8%" color="yellow" />
       </div>
 
-      {/* Revenue Chart */}
-      <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6 h-[400px]">
-        <h3 className="text-xl mb-6 font-bold">تحليل الإيرادات (آخر ٦ أشهر)</h3>
+      {/* Dynamic Financial Chart */}
+      <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-8 h-[450px]">
+        <h3 className="text-xl mb-8 font-black text-gray-900">تحليل التدفق المالي (الأشهر الأخيرة)</h3>
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={revenueData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3}/>
                 <stop offset="95%" stopColor="#D4AF37" stopOpacity={0}/>
               </linearGradient>
+              <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2}/>
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+              </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" vertical={false} />
-            <XAxis dataKey="name" stroke="rgba(0,0,0,0.3)" tick={{fill: 'rgba(0,0,0,0.5)', fontSize: 12, fontWeight: 'bold'}} axisLine={false} tickLine={false} />
-            <YAxis stroke="rgba(0,0,0,0.3)" tick={{fill: 'rgba(0,0,0,0.5)', fontSize: 12, fontWeight: 'bold'}} axisLine={false} tickLine={false} tickFormatter={(value) => `${value / 1000}k`} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" vertical={false} />
+            <XAxis dataKey="name" stroke="rgba(0,0,0,0.5)" tick={{fill: 'rgba(0,0,0,1)', fontSize: 13, fontWeight: '900'}} axisLine={false} tickLine={false} />
+            <YAxis stroke="rgba(0,0,0,0.5)" tick={{fill: 'rgba(0,0,0,1)', fontSize: 13, fontWeight: '900'}} axisLine={false} tickLine={false} tickFormatter={(value) => `${value / 1000}k`} />
             <Tooltip 
-              contentStyle={{ backgroundColor: '#1A1A1A', borderColor: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontWeight: 'bold' }}
-              itemStyle={{ color: '#D4AF37' }}
-              formatter={(value) => [`${value.toLocaleString()} ج.م`, 'الإيرادات']}
-              labelStyle={{ color: 'rgba(0,0,0,0.5)', marginBottom: '8px' }}
+              contentStyle={{ backgroundColor: '#1A1A1A', borderColor: 'rgba(0,0,0,0.1)', borderRadius: '12px', fontWeight: 'black' }}
+              itemStyle={{ color: '#fff' }}
+              formatter={(value) => [`${value.toLocaleString()} ج.م`]}
+              labelStyle={{ color: 'rgba(255,255,255,0.5)', marginBottom: '8px' }}
             />
-            <Area type="monotone" dataKey="revenue" stroke="#D4AF37" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+            <Area type="monotone" dataKey="revenue" name="الإيرادات" stroke="#D4AF37" strokeWidth={4} fillOpacity={1} fill="url(#colorRevenue)" />
+            <Area type="monotone" dataKey="expenses" name="المصروفات" stroke="#ef4444" strokeWidth={4} fillOpacity={1} fill="url(#colorExpenses)" />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Projects */}
+        {/* Recent Projects Table */}
         <div className="lg:col-span-2 bg-white shadow-sm border border-gray-200 rounded-2xl overflow-hidden">
-          <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h3 className="text-xl font-bold">آخر المشاريع</h3>
-            <button className="text-accent-gold text-sm font-black">عرض الكل</button>
+          <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50/50">
+            <h3 className="text-xl font-black text-gray-900">أحدث المشاريع القائمة</h3>
+            <button className="text-accent-gold text-sm font-black hover:underline">عرض الكل</button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-right">
               <thead>
-                <tr className="text-xs uppercase tracking-widest text-gray-500 border-b border-gray-200">
-                  <th className="p-6">اسم المشروع</th>
-                  <th className="p-6">العميل</th>
-                  <th className="p-6">الحالة</th>
-                  <th className="p-6">الميزانية</th>
+                <tr className="text-xs uppercase tracking-widest text-gray-900 border-b border-gray-200">
+                  <th className="p-6 font-black">اسم المشروع</th>
+                  <th className="p-6 font-black">العميل</th>
+                  <th className="p-6 font-black">الحالة</th>
+                  <th className="p-6 font-black">الميزانية</th>
                   <th className="p-6"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {[
-                  { name: 'فيلا الرحاب', client: 'أحمد إبراهيم', status: 'تحت التنفيذ', budget: '١٢٠,٠٠٠ ج.م', color: 'blue' },
-                  { name: 'مكتب أونيكس', client: 'شركة مودرن تك', status: 'مرحلة التصميم', budget: '٤٥,٠٠٠ ج.م', color: 'purple' },
-                  { name: 'بنتهاوس زايد', client: 'سارة كمال', status: 'مرحلة التشطيب', budget: '٨٥,٠٠٠ ج.م', color: 'orange' },
-                  { name: 'لوفت جاردينيا', client: 'يوسف علي', status: 'مكتمل', budget: '٣٢,٠٠٠ ج.م', color: 'green' }
-                ].map((project, i) => (
-                  <tr key={i} className="hover:bg-gray-50 transition-all group">
-                    <td className="p-6 font-bold">{project.name}</td>
-                    <td className="p-6 text-gray-500 font-medium">{project.client}</td>
+                {projects.slice(-4).reverse().map((project) => (
+                  <tr key={project.id} className="hover:bg-gray-50 transition-all group">
+                    <td className="p-6 font-black text-gray-900">{project.name}</td>
+                    <td className="p-6 text-gray-900 font-black">{project.client}</td>
                     <td className="p-6">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-${project.color}-500/10 text-${project.color}-500`}>
+                      <span className="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-accent-gold/10 text-accent-gold border border-accent-gold/20">
                         {project.status}
                       </span>
                     </td>
-                    <td className="p-6 font-bold">{project.budget}</td>
+                    <td className="p-6 font-black text-gray-900">{project.budget}</td>
                     <td className="p-6 text-left">
-                      <button className="text-gray-500 hover:text-gray-900 transition-colors"><MoreVertical size={18} /></button>
+                      <button className="text-gray-700 hover:text-accent-gold transition-colors"><MoreVertical size={18} /></button>
                     </td>
                   </tr>
                 ))}
+                {projects.length === 0 && (
+                  <tr><td colSpan="5" className="p-10 text-center text-gray-900 font-black">لا توجد مشاريع مسجلة حالياً.</td></tr>
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Activity Feed */}
-        <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-          <h3 className="text-xl mb-6 font-bold">نشاط مباشر</h3>
-          <div className="space-y-6">
+        {/* Dynamic Activity Feed */}
+        <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-8">
+          <h3 className="text-xl mb-8 font-black text-gray-900">النشاط الأخير</h3>
+          <div className="space-y-8">
             {[
-              { text: 'تم الانتهاء من معاينة موقع فيلا الرحاب', time: 'منذ ساعتين', icon: CheckCircle2, color: 'green' },
-              { text: 'طلب عرض سعر جديد من عميل في التجمع', time: 'منذ ٤ ساعات', icon: Clock, color: 'blue' },
-              { text: 'جدولة توريد خامات لمشروع أونيكس', time: 'أمس', icon: TrendingUp, color: 'yellow' },
-              { text: 'تم استلام الدفعة النهائية لـ لوفت جاردينيا', time: 'أمس', icon: CheckCircle2, color: 'green' }
+              ...projects.slice(-2).map(p => ({ text: `تحديث في: ${p.name}`, time: 'مؤخراً', icon: Clock, color: 'blue' })),
+              ...quotes.slice(-2).map(q => ({ text: `تسعير جديد: ${q.client}`, time: 'مؤخراً', icon: TrendingUp, color: 'yellow' })),
+              ...clients.slice(-1).map(c => ({ text: `عميل جديد: ${c.name}`, time: 'جديد', icon: CheckCircle2, color: 'green' }))
             ].map((activity, i) => (
-              <div key={i} className="flex gap-4">
-                <div className={`mt-1 p-2 rounded-lg bg-${activity.color}-500/10 text-${activity.color}-500 h-fit`}>
-                  <activity.icon size={16} />
+              <div key={i} className="flex gap-4 items-start group">
+                <div className={`p-2.5 rounded-xl bg-${activity.color}-500/10 text-${activity.color}-600 h-fit group-hover:scale-110 transition-transform border border-${activity.color}-500/20`}>
+                  <activity.icon size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium leading-relaxed">{activity.text}</p>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">{activity.time}</p>
+                  <p className="text-sm font-black text-gray-900 leading-relaxed">{activity.text}</p>
+                  <p className="text-[11px] text-gray-900 uppercase tracking-widest mt-1.5 font-black opacity-70">{activity.time}</p>
                 </div>
               </div>
             ))}
@@ -170,80 +191,57 @@ const Overview = () => {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        .lg\\:col-span-2 { grid-column: span 2 / span 2; }
-        .divide-y > * + * { border-top-width: 1px; }
-        .divide-glass-border > * + * { border-color: var(--glass-border); }
-        .bg-blue-500\\/10 { background-color: rgba(59, 130, 246, 0.1); }
-        .text-blue-500 { color: #3b82f6; }
-        .bg-green-500\\/10 { background-color: rgba(34, 197, 94, 0.1); }
-        .text-green-500 { color: #22c55e; }
-        .bg-orange-500\\/10 { background-color: rgba(249, 115, 22, 0.1); }
-        .text-orange-500 { color: #f97316; }
-        .bg-yellow-500\\/10 { background-color: rgba(234, 179, 8, 0.1); }
-        .text-yellow-500 { color: #eab308; }
-        .bg-purple-500\\/10 { background-color: rgba(168, 85, 247, 0.1); }
-        .text-purple-500 { color: #a855f7; }
-      `}} />
-      {/* To-Do List */}
-      <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold">مهامي اليوم</h3>
-          <span className="text-xs font-black text-accent-gold bg-accent-gold/10 px-3 py-1 rounded-full">
-            {todos.filter(t => !t.done).length} متبقية
+      {/* Admin Tasks */}
+      <div className="bg-white shadow-sm border border-gray-200 rounded-2xl p-8">
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-xl font-black text-gray-900">المهام اليومية</h3>
+          <span className="text-xs font-black text-accent-gold bg-accent-gold/10 px-5 py-2 rounded-full border border-accent-gold/20">
+            {todos.filter(t => !t.done).length} مهام نشطة
           </span>
         </div>
 
-        {/* Add new todo */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-4 mb-8">
           <input
             value={newTodo}
             onChange={e => setNewTodo(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && addTodo()}
-            placeholder="أضف مهمة جديدة..."
-            className="flex-1 bg-gray-50 border border-gray-300 rounded-xl py-3 px-4 text-sm font-bold focus:border-accent-gold outline-none transition-colors placeholder:text-gray-500"
+            placeholder="أدخل مهمة جديدة..."
+            className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl py-4 px-6 text-sm font-black focus:border-accent-gold outline-none transition-colors placeholder:text-gray-400"
           />
-          <button onClick={addTodo} className="p-3 bg-accent-gold/10 text-accent-gold hover:bg-accent-gold hover:text-bg-primary rounded-xl transition-all">
-            <Plus size={20} />
+          <button onClick={addTodo} className="px-8 bg-accent-gold text-white hover:bg-accent-gold-dark rounded-2xl transition-all shadow-xl shadow-accent-gold/30">
+            <Plus size={24} />
           </button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {todos.map(todo => (
             <motion.div
               key={todo.id}
               layout
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${
+              className={`flex items-center gap-5 p-5 rounded-2xl border-2 transition-all ${
                 todo.done 
-                  ? 'bg-green-500/5 border-green-500/20 opacity-60' 
-                  : 'bg-white/3 border-gray-200 hover:border-gray-300'
+                  ? 'bg-green-50 border-green-200 opacity-60' 
+                  : 'bg-white border-gray-100 hover:border-gray-300 shadow-sm'
               }`}
             >
               <button
                 onClick={() => toggleTodo(todo.id)}
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
-                  todo.done ? 'bg-green-500 border-green-500' : 'border-white/20 hover:border-accent-gold'
+                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                  todo.done ? 'bg-green-500 border-green-500 shadow-lg shadow-green-500/30' : 'border-gray-300 hover:border-accent-gold'
                 }`}
               >
-                {todo.done && <CheckCircle2 size={12} className="text-gray-900" />}
+                {todo.done && <CheckCircle2 size={16} className="text-white" />}
               </button>
-              <span className={`flex-1 text-sm font-bold ${todo.done ? 'line-through text-gray-500' : ''}`}>
+              <span className={`flex-1 text-base font-black ${todo.done ? 'line-through text-gray-600' : 'text-gray-900'}`}>
                 {todo.text}
               </span>
-              <button onClick={() => deleteTodo(todo.id)} className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all">
-                <Trash2 size={14} />
+              <button onClick={() => deleteTodo(todo.id)} className="p-2.5 text-gray-900 hover:text-red-500 hover:bg-red-50 transition-all rounded-xl">
+                <Trash2 size={20} />
               </button>
             </motion.div>
           ))}
-          {todos.length === 0 && (
-            <p className="text-center text-gray-500 font-bold py-8 text-sm">✓ لا توجد مهام معلقة. أحسنت صنعا!</p>
-          )}
         </div>
       </div>
-
     </div>
   )
 }

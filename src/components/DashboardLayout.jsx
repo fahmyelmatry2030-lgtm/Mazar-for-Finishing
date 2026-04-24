@@ -18,10 +18,10 @@ import {
 const SidebarItem = ({ icon: Icon, label, to, active }) => (
   <Link 
     to={to} 
-    className={`flex items-center gap-4 px-6 py-4 transition-all ${active ? 'bg-accent-gold/10 text-accent-gold border-l-2 border-accent-gold' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}
+    className={`flex items-center gap-4 px-6 py-4 transition-all ${active ? 'bg-accent-gold/10 text-accent-gold border-l-2 border-accent-gold' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'}`}
   >
     <Icon size={20} />
-    <span className="font-bold tracking-wide text-sm">{label}</span>
+    <span className="font-black tracking-wide text-sm">{label}</span>
   </Link>
 )
 
@@ -63,7 +63,7 @@ const DashboardLayout = ({ children }) => {
           <SidebarItem icon={Settings} label="الإعدادات" to="/dashboard/settings" active={location.pathname === '/dashboard/settings'} />
           <button onClick={handleLogout} className="flex items-center gap-4 px-6 py-4 w-full text-red-500 hover:bg-red-500/10 transition-all mt-2 rounded-lg">
             <LogOut size={20} />
-            <span className="font-bold text-sm">تسجيل الخروج</span>
+            <span className="font-black text-sm">تسجيل الخروج</span>
           </button>
         </div>
       </aside>
@@ -73,7 +73,7 @@ const DashboardLayout = ({ children }) => {
         {/* Topbar */}
         <header className="h-20 border-b border-gray-200 px-10 flex items-center justify-between bg-gray-50/80 backdrop-blur-md z-20">
           <div className="relative w-96">
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-700" size={18} />
             <input 
               type="text" 
               placeholder="ابحث عن مشروع أو عميل..." 
@@ -82,14 +82,14 @@ const DashboardLayout = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-6">
-            <button className="relative p-2 text-gray-500 hover:text-gray-900 transition-all">
+            <button className="relative p-2 text-gray-700 hover:text-gray-900 transition-all">
               <Bell size={22} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-accent-gold rounded-full"></span>
             </button>
             <div className="flex items-center gap-3 pr-6 border-r border-gray-200">
               <div className="text-left">
-                <p className="text-sm font-bold">المهندس المسؤول</p>
-                <p className="text-[10px] uppercase text-accent-gold font-bold tracking-wider">كبير المصممين</p>
+                <p className="text-sm font-black">المهندس المسؤول</p>
+                <p className="text-[10px] uppercase text-accent-gold font-black tracking-wider">كبير المصممين</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-accent-gold flex items-center justify-center text-black font-black">
                 م
