@@ -1,5 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { MessageCircle, ArrowUp } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -31,18 +31,67 @@ import DesignRequestPage from './pages/public/DesignRequestPage'
 import QuotationRequestPage from './pages/public/QuotationRequestPage'
 import ClientPortalPage from './pages/public/ClientPortalPage'
 
-function App() {
-  const [showBackToTop, setShowBackToTop] = useState(false)
+// Self-contained Back to Top button so scroll state changes NEVER re-render the app
+const BackToTop = () => {
+  const [show, setShow] = useState(false)
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 300)
+      setShow(window.scrollY > 300)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-  
+
+  if (!show) return null
+
+  return (
+    <button onClick={scrollToTop} className="back-to-top" aria-label="العودة للأعلى">
+      <ArrowUp size={20} />
+    </button>
+  )
+}
+
+// Scroll to top automatically only when changing routes
+const ScrollToTopOnNavigate = () => {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
+
+// Stable Public Layout defined at module scope to prevent unmounting on re-renders
+const PublicLayout = () => {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+      <Footer />
+      <BottomNav />
+      <LiveChat />
+      <a href="https://wa.me/201234567890" target="_blank" rel="noreferrer" className="whatsapp-float" aria-label="تواصل عبر واتساب">
+        <MessageCircle size={26} />
+      </a>
+      <BackToTop />
+    </>
+  )
+}
+
+// Stable route guards defined at module scope
+const ProtectedRoute = ({ user, children }) => {
+  if (user === undefined) return null // still checking
+  if (!user) return <Navigate to="/login" replace />
+  return children
+}
+
+const PublicRoute = ({ user, children }) => {
+  if (user) return <Navigate to="/dashboard" replace />
+  return children
+}
+
+function App() {
   // Firebase auth state (null = checking, false = not logged in, object = logged in)
   const [firebaseUser, setFirebaseUser] = useState(undefined)
   const [appLoading, setAppLoading] = useState(true)
@@ -55,7 +104,6 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setFirebaseUser(user)
       if (user) {
-        // User is logged in — load Firestore data
         initializeData()
       } else {
         setAppLoading(false)
@@ -74,19 +122,6 @@ function App() {
     }
   }, [firebaseUser, dataLoading])
 
-  // Protected Route: requires Firebase auth
-  const ProtectedRoute = ({ children }) => {
-    if (firebaseUser === undefined) return null // still checking
-    if (!firebaseUser) return <Navigate to="/login" replace />
-    return children
-  }
-
-  // Public route: redirect logged-in users away from /login
-  const PublicRoute = ({ children }) => {
-    if (firebaseUser) return <Navigate to="/dashboard" replace />
-    return children
-  }
-
   // Global loading screen
   if (appLoading) {
     return (
@@ -104,43 +139,27 @@ function App() {
     )
   }
 
-  // Public page layout wrapper
-  const PublicLayout = ({ children }) => (
-    <>
-      <Navbar />
-      {children}
-      <Footer />
-      <BottomNav />
-      <LiveChat />
-      <a href="https://wa.me/201234567890" target="_blank" rel="noreferrer" className="whatsapp-float" aria-label="تواصل عبر واتساب">
-        <MessageCircle size={26} />
-      </a>
-      {showBackToTop && (
-        <button onClick={scrollToTop} className="back-to-top" aria-label="العودة للأعلى">
-          <ArrowUp size={20} />
-        </button>
-      )}
-    </>
-  )
-
   return (
     <Router>
+      <ScrollToTopOnNavigate />
       <div className="app-container">
         <Toaster position="top-center" reverseOrder={false} toastOptions={{ duration: 3000 }} />
         <Routes>
-          {/* Public Pages */}
-          <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-          <Route path="/services" element={<PublicLayout><ServicesPage /></PublicLayout>} />
-          <Route path="/portfolio" element={<PublicLayout><PortfolioPage /></PublicLayout>} />
-          <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
-          <Route path="/consultation" element={<PublicLayout><ConsultationPage /></PublicLayout>} />
-          <Route path="/request-design" element={<PublicLayout><DesignRequestPage /></PublicLayout>} />
-          <Route path="/quotation" element={<PublicLayout><QuotationRequestPage /></PublicLayout>} />
-          <Route path="/client-portal" element={<PublicLayout><ClientPortalPage /></PublicLayout>} />
+          {/* Public Pages wrapped in persistent PublicLayout */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/portfolio" element={<PortfolioPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/consultation" element={<ConsultationPage />} />
+            <Route path="/request-design" element={<DesignRequestPage />} />
+            <Route path="/quotation" element={<QuotationRequestPage />} />
+            <Route path="/client-portal" element={<ClientPortalPage />} />
+          </Route>
 
           {/* Auth */}
           <Route path="/login" element={
-            <PublicRoute>
+            <PublicRoute user={firebaseUser}>
               <Suspense fallback={<div className="min-h-screen bg-bg-primary flex items-center justify-center"><div className="w-8 h-8 border-2 border-accent-gold border-t-transparent rounded-full animate-spin" /></div>}>
                 <Login />
               </Suspense>
@@ -148,7 +167,7 @@ function App() {
           } />
 
           <Route path="/register" element={
-            <PublicRoute>
+            <PublicRoute user={firebaseUser}>
               <Suspense fallback={<div className="min-h-screen bg-bg-primary flex items-center justify-center"><div className="w-8 h-8 border-2 border-accent-gold border-t-transparent rounded-full animate-spin" /></div>}>
                 <Register />
               </Suspense>
@@ -157,7 +176,7 @@ function App() {
 
           {/* Dashboard — Protected */}
           <Route path="/dashboard/*" element={
-            <ProtectedRoute>
+            <ProtectedRoute user={firebaseUser}>
               <Suspense fallback={
                 <div className="min-h-screen bg-bg-primary flex flex-col items-center justify-center gap-6" dir="rtl">
                   <div className="w-16 h-16 bg-accent-gold flex items-center justify-center rounded-2xl shadow-[0_0_30px_rgba(212,175,55,0.4)]">
