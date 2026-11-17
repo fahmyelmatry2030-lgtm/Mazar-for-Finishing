@@ -17,10 +17,16 @@ import {
   Search, 
   ArrowLeft,
   DollarSign,
-  AlertCircle
+  AlertCircle,
+  Bell,
+  MessageSquare,
+  Send,
+  Paperclip,
+  Sparkles
 } from 'lucide-react'
 import SEO from '../../components/SEO'
 import PaymentModal from '../../components/PaymentModal'
+import MeetingReminders from '../../components/MeetingReminders'
 import toast from 'react-hot-toast'
 
 // Sample projects in the client portal
@@ -80,9 +86,40 @@ const sampleClientProjects = {
 const ClientPortalPage = () => {
   const [projectCodeInput, setProjectCodeInput] = useState('MZR-2026-08')
   const [activeProject, setActiveProject] = useState(sampleClientProjects['MZR-2026-08'])
-  const [activeTab, setActiveTab] = useState('progress') // progress | updates | documents | financials
+  const [activeTab, setActiveTab] = useState('progress') // progress | reminders | updates | documents | financials | chat
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [paymentDetails, setPaymentDetails] = useState({ amount: 250000, title: 'سداد دفعة توريد الرخام' })
+
+  // Portal live chat state
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, sender: 'engineer', text: 'أهلاً بك أ. أحمد، يسعدني إبلاغك أن مرحلة الرخام تسير وفق الجدول الزمني المحدد وسنبدأ المعالجة السطحية غداً.', time: '10:30 ص' },
+    { id: 2, sender: 'client', text: 'ممتاز يا باشمهندس حسام، هل تم اعتماد عينة دهانات غرف النوم؟', time: '11:15 ص' },
+    { id: 3, sender: 'engineer', text: 'نعم بالفعل، تم تجهيز عينة بالكرتونة في الموقع وبإمكاننا مراجعتها سوياً في اجتماع اليوم المسائي.', time: '11:20 ص' }
+  ])
+  const [newChatText, setNewChatText] = useState('')
+
+  const handleSendChat = (e) => {
+    e.preventDefault()
+    if (!newChatText.trim()) return
+
+    const clientMsg = {
+      id: Date.now(),
+      sender: 'client',
+      text: newChatText.trim(),
+      time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+    }
+    setChatMessages(prev => [...prev, clientMsg])
+    setNewChatText('')
+
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, {
+        id: Date.now() + 1,
+        sender: 'engineer',
+        text: 'تم استلام ملاحظتك يا فندم وجاري متابعتها مع مشرف الموقع وتحديث السجل الآن.',
+        time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+      }])
+    }, 1000)
+  }
 
   const handleSearchProject = (e) => {
     e.preventDefault()
@@ -121,12 +158,12 @@ const ClientPortalPage = () => {
             متابعة <span className="text-gold-gradient italic">مشروعك ومستنداتك</span>
           </h1>
           <p className="text-text-secondary text-xs sm:text-sm font-medium">
-            شفافية هندسية كاملة: تقارير الموقع الحية، المخططات المعتمدة، وسداد الدفعات إلكترونياً.
+            شفافية هندسية كاملة: تقارير الموقع الحية، المخططات المعتمدة، تنبيه المواعيد، وسداد الدفعات إلكترونياً.
           </p>
         </div>
 
         {/* Project Code Search / Switcher Bar */}
-        <div className="max-w-xl mx-auto mb-10">
+        <div className="max-w-xl mx-auto mb-8">
           <form onSubmit={handleSearchProject} className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
@@ -186,15 +223,13 @@ const ClientPortalPage = () => {
                     <Phone size={14} className="text-accent-gold" />
                     <span>اتصال بالمهندس المشرف</span>
                   </a>
-                  <a 
-                    href={`https://wa.me/201234567890?text=${encodeURIComponent(`مرحباً م. حسام، استفسار بخصوص مشروعي: ${activeProject.projectName}`)}`}
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="flex-1 md:flex-none p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+                  <button 
+                    onClick={() => setActiveTab('chat')}
+                    className="flex-1 md:flex-none p-2.5 rounded-xl bg-accent-gold/15 hover:bg-accent-gold/25 border border-accent-gold/30 text-accent-gold text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
                   >
-                    <MessageCircle size={14} />
-                    <span>محادثة واتساب سريعة</span>
-                  </a>
+                    <MessageSquare size={14} />
+                    <span>شات المهندس المشرف</span>
+                  </button>
                 </div>
               </div>
 
@@ -240,14 +275,16 @@ const ClientPortalPage = () => {
             <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/10 scrollbar-none">
               {[
                 { id: 'progress', label: 'مراحل المشروع', icon: Clock },
+                { id: 'reminders', label: 'المواعيد والمهام (Todo)', icon: Calendar, badge: 'تنبيه' },
                 { id: 'updates', label: 'تحديثات الموقع الحية', icon: Camera },
                 { id: 'documents', label: 'المستندات والرسومات', icon: FileText },
                 { id: 'financials', label: 'الدفعات المالية والدفع', icon: CreditCard },
+                { id: 'chat', label: 'شات المهندس المشرف', icon: MessageSquare },
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 py-3 px-5 rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${
+                  className={`flex items-center gap-2 py-3 px-4 sm:px-5 rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap cursor-pointer ${
                     activeTab === tab.id 
                       ? 'bg-accent-gold text-bg-primary shadow-gold' 
                       : 'text-text-secondary hover:text-white bg-white/5 border border-white/5'
@@ -255,9 +292,84 @@ const ClientPortalPage = () => {
                 >
                   <tab.icon size={16} />
                   <span>{tab.label}</span>
+                  {tab.badge && (
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-red-500 text-white font-bold animate-pulse">
+                      {tab.badge}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
+
+            {/* Tab: Reminders & Todo List */}
+            {activeTab === 'reminders' && (
+              <div className="space-y-6">
+                <MeetingReminders />
+              </div>
+            )}
+
+            {/* Tab: Live Chat with Supervising Engineer */}
+            {activeTab === 'chat' && (
+              <div className="glass-panel rounded-3xl border border-white/10 overflow-hidden flex flex-col h-[560px]">
+                {/* Chat Top Header */}
+                <div className="p-4 bg-bg-secondary border-b border-white/10 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-full bg-accent-gold/20 border border-accent-gold flex items-center justify-center text-accent-gold font-black">
+                        ح
+                      </div>
+                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-bg-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-white">{activeProject.engineer}</h4>
+                      <span className="text-xs text-emerald-400 font-bold">متواجد للمتابعة الفنية المباشرة</span>
+                    </div>
+                  </div>
+
+                  <a 
+                    href={`https://wa.me/201234567890?text=${encodeURIComponent(`مرحباً م. حسام، استفسار حول مشروعي: ${activeProject.projectName}`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                  >
+                    <MessageCircle size={15} />
+                    <span className="hidden sm:inline">فتح على واتساب</span>
+                  </a>
+                </div>
+
+                {/* Chat Messages */}
+                <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-bg-primary/50 text-xs sm:text-sm">
+                  {chatMessages.map(m => (
+                    <div key={m.id} className={`flex flex-col ${m.sender === 'client' ? 'items-end' : 'items-start'}`}>
+                      <span className="text-[10px] text-text-muted mb-1 px-1">
+                        {m.sender === 'client' ? 'أنت' : 'المهندس المشرف'} · {m.time}
+                      </span>
+                      <div className={`p-4 rounded-2xl max-w-[80%] leading-relaxed ${
+                        m.sender === 'client' 
+                          ? 'bg-accent-gold text-bg-primary font-bold rounded-tl-sm' 
+                          : 'bg-bg-secondary text-white rounded-tr-sm border border-white/10'
+                      }`}>
+                        {m.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Input Bar */}
+                <form onSubmit={handleSendChat} className="p-3.5 bg-bg-secondary border-t border-white/10 flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="اكتب استفسارك أو ملاحظتك للمهندس هنا..." 
+                    value={newChatText}
+                    onChange={e => setNewChatText(e.target.value)}
+                    className="flex-1 bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-xs sm:text-sm text-white font-bold outline-none focus:border-accent-gold"
+                  />
+                  <button type="submit" className="btn-premium p-3 rounded-xl flex items-center justify-center">
+                    <Send size={18} />
+                  </button>
+                </form>
+              </div>
+            )}
 
             {/* Tab 1: Project Phases Timeline */}
             {activeTab === 'progress' && (
