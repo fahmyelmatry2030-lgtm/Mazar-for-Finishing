@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Sparkles, ShieldCheck, Clock, Award } from 'lucide-react'
 
 const Hero = () => {
   const ref = useRef(null)
@@ -10,88 +10,156 @@ const Hero = () => {
   })
 
   // Parallax effects
-  const yText = useTransform(scrollYProgress, [0, 1], [0, 200])
-  const scaleImage = useTransform(scrollYProgress, [0, 1], [1, 1.15])
-  const opacityOverlay = useTransform(scrollYProgress, [0, 1], [0.6, 0.9])
+  const yText = useTransform(scrollYProgress, [0, 1], [0, 100])
+  const scaleImage = useTransform(scrollYProgress, [0, 1], [1, 1.12])
+  const opacityOverlay = useTransform(scrollYProgress, [0, 1], [0.85, 0.98])
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   return (
-    <section ref={ref} className="relative h-screen w-full flex items-center overflow-hidden bg-bg-primary">
-      
-      {/* Cinematic Background */}
+    <section 
+      ref={ref} 
+      className="relative min-h-[100dvh] h-[100dvh] w-full flex flex-col justify-end overflow-hidden bg-bg-primary"
+    >
+      {/* Cinematic Background Image */}
       <motion.div 
         style={{ scale: scaleImage }}
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 pointer-events-none"
       >
         <img 
-          src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1920&q=100" 
-          className="w-full h-full object-cover grayscale-[30%]" 
-          alt="Luxury Interior Design"
+          src="/mazar_hero.png" 
+          onError={(e) => {
+            // Fallback to luxury architectural photo if local asset fails
+            e.currentTarget.src = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1920&q=100"
+          }}
+          className="w-full h-full object-cover object-center brightness-[0.85]" 
+          alt="مزار للتشطيبات المعمارية والديكور الداخلي"
         />
       </motion.div>
 
-      {/* Dark Overlay Gradient */}
+      {/* Atmospheric Luxury Gradient Overlays */}
       <motion.div 
         style={{ opacity: opacityOverlay }}
-        className="absolute inset-0 bg-gradient-to-t from-bg-primary via-bg-primary/50 to-transparent z-10" 
+        className="absolute inset-0 bg-gradient-to-t from-bg-primary via-bg-primary/80 via-45% to-black/35 z-10 pointer-events-none" 
       />
 
-      {/* Content */}
-      <div className="container relative z-20 h-full flex flex-col justify-center">
+      {/* Radial Gold Ambient Glow behind Bottom Content */}
+      <div 
+        className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent-gold/10 blur-[140px] rounded-full pointer-events-none z-10" 
+      />
+
+      {/* Bottom-Aligned Content */}
+      <div className="container relative z-20 pb-8 sm:pb-12 md:pb-16 pt-28 flex flex-col justify-end">
         <motion.div 
           style={{ y: yText }}
-          className="max-w-5xl"
+          className="max-w-4xl"
         >
+          {/* Luxury Badge */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: [0.83, 0, 0.17, 1] }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-3 sm:mb-5"
           >
-            <span className="subtitle mb-8">التميز المعماري الحديث</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent-gold/10 border border-accent-gold/30 text-accent-gold text-xs sm:text-sm font-bold backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-accent-gold animate-pulse" />
+              <span>التميز المعماري الحديث · مزار للتشطيبات الفاخرة</span>
+            </div>
           </motion.div>
 
-          <h1 className="text-[4rem] md:text-[6rem] lg:text-[8rem] leading-[1.1] mb-10 text-text-primary drop-shadow-2xl">
+          {/* Main Title - Responsive & Impactful */}
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.12] mb-3 sm:mb-5 text-white drop-shadow-2xl">
             <motion.span 
-              initial={{ opacity: 0, y: 100 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.2, ease: [0.83, 0, 0.17, 1] }}
-              className="block"
+              transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="inline-block"
             >
               نصمم الفخامة
             </motion.span>
+            {' '}
             <motion.span 
-              initial={{ opacity: 0, y: 100 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.4, ease: [0.83, 0, 0.17, 1] }}
-              className="block text-gold-gradient italic pr-4 md:pr-12"
+              transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="text-gold-gradient italic pr-2 sm:pr-4 inline-block"
             >
               بأدق التفاصيل
             </motion.span>
           </h1>
 
+          {/* Subtitle / Description */}
           <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, delay: 0.6 }}
-            className="text-text-secondary text-lg md:text-2xl max-w-2xl mb-14 font-medium leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.4 }}
+            className="text-text-secondary text-sm sm:text-base md:text-xl max-w-2xl mb-6 sm:mb-8 font-medium leading-relaxed"
           >
-            مؤسسة مزار للتشطيبات والديكور. نقدم حلولاً هندسية متكاملة لتحويل المساحات إلى تحف معمارية تعكس أسلوب حياتك الراقي.
+            نحول رؤيتك إلى واقع معماري استثنائي. تصميم داخلي وتنفيذ هندسي متكامل للمساحات السكنية والتجارية الراقية، نلتزم فيها بأعلى معايير الإتقان والدقة.
           </motion.p>
 
+          {/* Action Buttons - Fully responsive touch targets */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.8 }}
-            className="flex flex-wrap gap-6"
+            transition={{ duration: 0.9, delay: 0.55 }}
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-10"
           >
-            <button className="btn-premium">
-              ابدأ مشروعك <ArrowLeft className="mr-3" size={20} />
+            <button 
+              onClick={() => scrollToSection('estimator')}
+              className="btn-premium group flex items-center justify-center gap-2.5 text-center"
+            >
+              <span>ابدأ مشروعك واحسب التكلفة</span>
+              <ArrowLeft className="group-hover:-translate-x-1.5 transition-transform duration-300" size={18} />
             </button>
-            <button className="btn-outline-premium">
-              استكشف أعمالنا
+            <button 
+              onClick={() => scrollToSection('portfolio')}
+              className="btn-outline-premium text-center"
+            >
+              استكشف سابقة الأعمال
             </button>
+          </motion.div>
+
+          {/* Trust Highlights - Mobile & Desktop Friendly */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.7 }}
+            className="grid grid-cols-3 gap-2 sm:gap-6 pt-4 border-t border-white/10 max-w-2xl text-[11px] sm:text-xs md:text-sm"
+          >
+            <div className="flex items-center gap-1.5 sm:gap-2 text-text-secondary font-bold">
+              <Award className="text-accent-gold flex-shrink-0" size={15} />
+              <span>تسليم مفتاح متكامل</span>
+            </div>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-text-secondary font-bold">
+              <ShieldCheck className="text-accent-gold flex-shrink-0" size={15} />
+              <span>إشراف هندسي معتمد</span>
+            </div>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-text-secondary font-bold">
+              <Clock className="text-accent-gold flex-shrink-0" size={15} />
+              <span>التزام بالجدول الزمني</span>
+            </div>
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Scroll Down Indicator */}
+      <motion.button
+        onClick={() => scrollToSection('stats')}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="hidden md:flex absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex-col items-center gap-1 text-text-muted hover:text-accent-gold transition-colors cursor-pointer"
+        aria-label="الانتقال للأسفل"
+      >
+        <span className="text-[10px] font-bold tracking-widest uppercase">اكتشف المزيد</span>
+        <ChevronDown size={18} className="animate-bounce text-accent-gold" />
+      </motion.button>
     </section>
   )
 }

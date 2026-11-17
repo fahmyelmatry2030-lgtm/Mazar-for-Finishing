@@ -1,51 +1,86 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Check } from 'lucide-react'
+import { Compass, Box, Hammer, Key } from 'lucide-react'
 
 const steps = [
-  { id: '٠١', title: 'الرؤية والاتفاق', desc: 'عقد جلسات استشارية مطولة للوقوف على أدق تفاصيل رغباتك وتطلعاتك لتصميم المساحة.' },
-  { id: '٠٢', title: 'التصميم الثلاثي الأبعاد', desc: 'تقديم تصور مرئي كامل يحاكي الواقع، لضمان تطابق الرؤية مع النتيجة النهائية قبل البدء.' },
-  { id: '٠٣', title: 'التنفيذ الهندسي', desc: 'إطلاق ورش العمل تحت إشراف نخبة من المهندسين مع الالتزام الصارم بالجدول الزمني.' },
-  { id: '٠٤', title: 'التسليم الفاخر', desc: 'مرحلة وضع اللمسات النهائية والتسليم النهائي للمشروع ليكون جاهزاً بالكامل لاستقبالك.' },
+  { 
+    id: '٠١', 
+    title: 'الرؤية وجلسة التخطيط', 
+    icon: Compass,
+    desc: 'جلسة استشارية معمقة لفهم ذوقك وميزانيتك ومتطلبات أسرتك أو عملك بدقة.' 
+  },
+  { 
+    id: '٠٢', 
+    title: 'التصميم الثلاثي الأبعاد 3D', 
+    icon: Box,
+    desc: 'محاكاة واقعية تشاهد فيها منزلك قبل بدء أي أعمال تكسير أو شراء خامات.' 
+  },
+  { 
+    id: '٠٣', 
+    title: 'التنفيذ والإشراف الهندسي', 
+    icon: Hammer,
+    desc: 'فريق متخصص من المهندسين والحرفيين المهرة يلتزم بالجدول والمواصفات القياسية.' 
+  },
+  { 
+    id: '٠٤', 
+    title: 'التسليم الفاخر والضمان', 
+    icon: Key,
+    desc: 'تسليم متكامل على المفتاح مع شهادات ضمان رسمية على كافة البنود والأنظمة.' 
+  },
 ]
 
 const Process = () => {
   return (
-    <section id="process" className="py-32 bg-bg-primary relative border-t border-white/5">
+    <section id="process" className="section-padding bg-bg-primary relative border-t border-white/5 overflow-hidden">
       <div className="container">
         
-        <div className="text-center mb-24">
-          <span className="subtitle justify-center mb-6">رحلة الإبداع</span>
-          <h2 className="text-[3rem] md:text-[5rem] font-black leading-tight">كيف نعمل في <span className="text-gold-gradient italic">مزار</span></h2>
+        {/* Section Header */}
+        <div className="text-center mb-14 sm:mb-20">
+          <span className="subtitle justify-center mb-4 sm:mb-6">منهجية العمل</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight text-white">
+            رحلة التنفيذ في <span className="text-gold-gradient italic">مزار</span>
+          </h2>
         </div>
 
-        <div className="relative">
-          {/* Connecting Line */}
-          <div className="hidden lg:block absolute top-1/2 left-0 w-full h-px bg-white/10 -translate-y-1/2" />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-            {steps.map((s, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: i * 0.2, ease: [0.83, 0, 0.17, 1] }}
-                className="relative group bg-bg-secondary p-10 rounded-2xl border border-white/5 hover:border-accent-gold/30 transition-colors duration-500"
-              >
-                <div className="text-6xl text-accent-gold/10 font-black mb-6 group-hover:text-accent-gold/20 transition-colors" style={{ fontFamily: 'Tajawal, sans-serif' }}>
-                  {s.id}
+        {/* Process Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          {steps.map((s, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="relative group bg-bg-secondary p-6 sm:p-8 rounded-2xl border border-white/10 hover:border-accent-gold/40 transition-all duration-300 flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-accent-gold/10 border border-accent-gold/30 flex items-center justify-center text-accent-gold group-hover:bg-accent-gold group-hover:text-bg-primary transition-colors duration-300">
+                    <s.icon size={22} />
+                  </div>
+                  <span 
+                    className="text-3xl sm:text-4xl font-black text-white/20 group-hover:text-accent-gold/40 transition-colors"
+                    style={{ fontFamily: 'Tajawal, sans-serif' }}
+                  >
+                    {s.id}
+                  </span>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-white group-hover:text-accent-gold transition-colors">{s.title}</h3>
-                <p className="text-text-secondary font-medium leading-relaxed">
+
+                <h3 className="text-lg sm:text-xl font-black mb-3 text-white group-hover:text-accent-gold transition-colors">
+                  {s.title}
+                </h3>
+                
+                <p className="text-text-secondary text-sm font-medium leading-relaxed">
                   {s.desc}
                 </p>
-                
-                {/* Node for line */}
-                <div className="hidden lg:flex absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-bg-primary border-2 border-accent-gold z-10" />
-              </motion.div>
-            ))}
-          </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-accent-gold/40 group-hover:bg-accent-gold transition-colors" />
+                <span className="text-xs text-text-muted font-bold">المرحلة {s.id}</span>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
       </div>

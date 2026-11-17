@@ -24,9 +24,22 @@ import Home from './pages/public/Home'
 import ServicesPage from './pages/public/ServicesPage'
 import PortfolioPage from './pages/public/PortfolioPage'
 import ContactPage from './pages/public/ContactPage'
+import ConsultationPage from './pages/public/ConsultationPage'
+import DesignRequestPage from './pages/public/DesignRequestPage'
+import QuotationRequestPage from './pages/public/QuotationRequestPage'
+import ClientPortalPage from './pages/public/ClientPortalPage'
 
 function App() {
+  const [showBackToTop, setShowBackToTop] = useState(false)
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
   
   // Firebase auth state (null = checking, false = not logged in, object = logged in)
   const [firebaseUser, setFirebaseUser] = useState(undefined)
@@ -89,29 +102,37 @@ function App() {
     )
   }
 
+  // Public page layout wrapper
+  const PublicLayout = ({ children }) => (
+    <>
+      <Navbar />
+      {children}
+      <Footer />
+      <a href="https://wa.me/201234567890" target="_blank" rel="noreferrer" className="whatsapp-float" aria-label="تواصل عبر واتساب">
+        <MessageCircle size={28} />
+      </a>
+      {showBackToTop && (
+        <button onClick={scrollToTop} className="back-to-top" aria-label="العودة للأعلى">
+          <ArrowUp size={20} />
+        </button>
+      )}
+    </>
+  )
+
   return (
     <Router>
       <div className="app-container">
         <Toaster position="top-center" reverseOrder={false} toastOptions={{ duration: 3000 }} />
         <Routes>
           {/* Public Pages */}
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <Home />
-              <Footer />
-              <a href="https://wa.me/201234567890" target="_blank" rel="noreferrer" className="whatsapp-float">
-                <MessageCircle size={32} />
-              </a>
-              <button onClick={scrollToTop} className="back-to-top">
-                <ArrowUp size={24} />
-              </button>
-            </>
-          } />
-
-          <Route path="/services"  element={<><Navbar /><ServicesPage /><Footer /></>} />
-          <Route path="/portfolio" element={<><Navbar /><PortfolioPage /><Footer /></>} />
-          <Route path="/contact"   element={<><Navbar /><ContactPage /><Footer /></>} />
+          <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+          <Route path="/services" element={<PublicLayout><ServicesPage /></PublicLayout>} />
+          <Route path="/portfolio" element={<PublicLayout><PortfolioPage /></PublicLayout>} />
+          <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
+          <Route path="/consultation" element={<PublicLayout><ConsultationPage /></PublicLayout>} />
+          <Route path="/request-design" element={<PublicLayout><DesignRequestPage /></PublicLayout>} />
+          <Route path="/quotation" element={<PublicLayout><QuotationRequestPage /></PublicLayout>} />
+          <Route path="/client-portal" element={<PublicLayout><ClientPortalPage /></PublicLayout>} />
 
           {/* Auth */}
           <Route path="/login" element={

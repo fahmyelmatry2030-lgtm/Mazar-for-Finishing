@@ -2,8 +2,11 @@ import React from 'react'
 import Hero from '../../components/Hero'
 import Stats from '../../components/Stats'
 import Services from '../../components/Services'
+import Process from '../../components/Process'
 import Portfolio from '../../components/Portfolio'
 import CostEstimator from '../../components/CostEstimator'
+import ConsultationBooking from '../../components/ConsultationBooking'
+import Contact from '../../components/Contact'
 import SEO from '../../components/SEO'
 
 const Home = () => {
@@ -15,10 +18,12 @@ const Home = () => {
       />
       <Hero />
       <Stats />
-      {/* For Home page, we show summarized versions or full sections if preferred */}
       <Services />
+      <Process />
       <Portfolio />
       <CostEstimator />
+      <ConsultationBooking />
+      <Contact />
     </>
   )
 }
