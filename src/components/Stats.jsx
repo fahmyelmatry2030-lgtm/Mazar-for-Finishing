@@ -12,11 +12,7 @@ const Stats = () => {
   return (
     <section id="stats" className="relative z-20 py-10 sm:py-16 md:py-20 bg-bg-primary overflow-hidden">
       <div className="container">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.05 }}
-          transition={{ duration: 0.6 }}
+        <div 
           className="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 shadow-premium border border-white/10"
         >
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
@@ -40,7 +36,7 @@ const Stats = () => {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

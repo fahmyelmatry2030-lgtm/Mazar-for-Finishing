@@ -1,17 +1,8 @@
-import React, { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import React from 'react'
+import { motion } from 'framer-motion'
 import { ArrowLeft, ChevronDown, Sparkles, ShieldCheck, Clock, Award } from 'lucide-react'
 
 const Hero = () => {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"]
-  })
-
-  // Subtle background zoom without touching text opacity or position
-  const scaleImage = useTransform(scrollYProgress, [0, 1], [1, 1.08])
-
   const scrollToSection = (id) => {
     const el = document.getElementById(id)
     if (el) {
@@ -21,15 +12,11 @@ const Hero = () => {
 
   return (
     <section 
-      ref={ref} 
       className="relative min-h-[100dvh] w-full flex flex-col justify-end bg-bg-primary overflow-hidden"
     >
       {/* Background Image Container */}
       <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
-        <motion.div 
-          style={{ scale: scaleImage }}
-          className="w-full h-full"
-        >
+        <div className="w-full h-full scale-105 transition-transform duration-1000 ease-out">
           <img 
             src="/mazar_hero.png" 
             onError={(e) => {
@@ -38,7 +25,7 @@ const Hero = () => {
             className="w-full h-full object-cover object-center brightness-[0.85]" 
             alt="مزار للتشطيبات المعمارية والديكور الداخلي"
           />
-        </motion.div>
+        </div>
       </div>
 
       {/* Atmospheric Luxury Gradient Overlays */}

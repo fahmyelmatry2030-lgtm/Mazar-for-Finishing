@@ -55,11 +55,7 @@ const Services = () => {
             >
               
               {/* Image Side */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.05 }}
-                transition={{ duration: 0.6 }}
+              <div 
                 className="w-full lg:w-1/2 relative group"
               >
                 <div className="overflow-hidden rounded-2xl shadow-premium aspect-[4/3] bg-bg-tertiary border border-white/10 group-hover:border-accent-gold/40 transition-colors">
@@ -77,14 +73,10 @@ const Services = () => {
                 >
                   {s.id}
                 </div>
-              </motion.div>
+              </div>
 
               {/* Text Side */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.05 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
+              <div 
                 className="w-full lg:w-1/2"
               >
                 <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 sm:mb-5 leading-tight text-white">
@@ -112,7 +104,7 @@ const Services = () => {
                   <span>اطلب استشارة مجانية</span>
                   <ArrowLeft size={18} className="group-hover:-translate-x-1.5 transition-transform" />
                 </a>
-              </motion.div>
+              </div>
 
             </div>
           ))}
