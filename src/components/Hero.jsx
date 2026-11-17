@@ -9,9 +9,10 @@ const Hero = () => {
     offset: ["start start", "end start"]
   })
 
-  // Parallax effects
-  const yText = useTransform(scrollYProgress, [0, 1], [0, 100])
-  const scaleImage = useTransform(scrollYProgress, [0, 1], [1, 1.12])
+  // Refined Parallax effects: content fades out gracefully on scroll instead of colliding
+  const yText = useTransform(scrollYProgress, [0, 0.4], [0, -35])
+  const opacityText = useTransform(scrollYProgress, [0, 0.35], [1, 0])
+  const scaleImage = useTransform(scrollYProgress, [0, 1], [1, 1.1])
   const opacityOverlay = useTransform(scrollYProgress, [0, 1], [0.85, 0.98])
 
   const scrollToSection = (id) => {
@@ -24,23 +25,25 @@ const Hero = () => {
   return (
     <section 
       ref={ref} 
-      className="relative min-h-[100dvh] h-[100dvh] w-full flex flex-col justify-end overflow-hidden bg-bg-primary"
+      className="relative min-h-[100dvh] w-full flex flex-col justify-end bg-bg-primary"
     >
-      {/* Cinematic Background Image */}
-      <motion.div 
-        style={{ scale: scaleImage }}
-        className="absolute inset-0 z-0 pointer-events-none"
-      >
-        <img 
-          src="/mazar_hero.png" 
-          onError={(e) => {
-            // Fallback to luxury architectural photo if local asset fails
-            e.currentTarget.src = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1920&q=100"
-          }}
-          className="w-full h-full object-cover object-center brightness-[0.85]" 
-          alt="مزار للتشطيبات المعمارية والديكور الداخلي"
-        />
-      </motion.div>
+      {/* Background Image Container with Overflow Hidden */}
+      <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
+        <motion.div 
+          style={{ scale: scaleImage }}
+          className="w-full h-full"
+        >
+          <img 
+            src="/mazar_hero.png" 
+            onError={(e) => {
+              // Fallback to luxury architectural photo if local asset fails
+              e.currentTarget.src = "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1920&q=100"
+            }}
+            className="w-full h-full object-cover object-center brightness-[0.85]" 
+            alt="مزار للتشطيبات المعمارية والديكور الداخلي"
+          />
+        </motion.div>
+      </div>
 
       {/* Atmospheric Luxury Gradient Overlays */}
       <motion.div 
@@ -53,10 +56,13 @@ const Hero = () => {
         className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent-gold/10 blur-[140px] rounded-full pointer-events-none z-10" 
       />
 
+      {/* Smooth Seamless Bottom Blend into Stats Section */}
+      <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-bg-primary via-bg-primary/90 to-transparent z-15 pointer-events-none" />
+
       {/* Bottom-Aligned Content */}
-      <div className="container relative z-20 pb-20 sm:pb-16 md:pb-20 pt-24 sm:pt-28 flex flex-col justify-end">
+      <div className="container relative z-20 pb-14 sm:pb-16 md:pb-20 pt-28 sm:pt-36 flex flex-col justify-end">
         <motion.div 
-          style={{ y: yText }}
+          style={{ y: yText, opacity: opacityText }}
           className="max-w-4xl"
         >
           {/* Luxury Badge */}
@@ -112,14 +118,14 @@ const Hero = () => {
           >
             <button 
               onClick={() => scrollToSection('estimator')}
-              className="btn-premium group flex items-center justify-center gap-2.5 text-center"
+              className="btn-premium group flex items-center justify-center gap-2.5 text-center cursor-pointer"
             >
               <span>ابدأ مشروعك واحسب التكلفة</span>
               <ArrowLeft className="group-hover:-translate-x-1.5 transition-transform duration-300" size={18} />
             </button>
             <button 
               onClick={() => scrollToSection('portfolio')}
-              className="btn-outline-premium text-center"
+              className="btn-outline-premium text-center cursor-pointer"
             >
               استكشف سابقة الأعمال
             </button>

@@ -306,12 +306,6 @@ h1, h2, h3, h4, h5, h6 {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
 }
 
-@media (max-width: 1023px) {
-  body {
-    padding-bottom: 64px;
-  }
-}
-
 .back-to-top:hover {
   background: var(--accent-gold);
   color: #0a0a0a;

@@ -10,7 +10,7 @@ const Stats = () => {
   ]
 
   return (
-    <section id="stats" className="relative z-20 -mt-4 sm:-mt-8 md:-mt-10 pb-16 md:pb-24">
+    <section id="stats" className="relative z-20 py-10 sm:py-16 md:py-20 bg-bg-primary">
       <div className="container">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
