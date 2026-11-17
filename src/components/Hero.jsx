@@ -54,7 +54,7 @@ const Hero = () => {
       />
 
       {/* Bottom-Aligned Content */}
-      <div className="container relative z-20 pb-8 sm:pb-12 md:pb-16 pt-28 flex flex-col justify-end">
+      <div className="container relative z-20 pb-20 sm:pb-16 md:pb-20 pt-24 sm:pt-28 flex flex-col justify-end">
         <motion.div 
           style={{ y: yText }}
           className="max-w-4xl"

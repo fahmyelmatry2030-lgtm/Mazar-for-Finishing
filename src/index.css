@@ -246,7 +246,7 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 999;
+  z-index: 990;
   width: 56px;
   height: 56px;
   border-radius: 9999px;
@@ -259,12 +259,12 @@ h1, h2, h3, h4, h5, h6 {
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1023px) {
   .whatsapp-float {
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
+    bottom: 76px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
   }
 }
 
@@ -277,7 +277,7 @@ h1, h2, h3, h4, h5, h6 {
   position: fixed;
   bottom: 24px;
   left: 24px;
-  z-index: 999;
+  z-index: 990;
   width: 48px;
   height: 48px;
   border-radius: 9999px;
@@ -292,12 +292,23 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1023px) {
   .back-to-top {
-    bottom: 20px;
-    left: 20px;
+    bottom: 76px;
+    left: 16px;
     width: 44px;
     height: 44px;
+  }
+}
+
+/* Safe area padding for mobile bottom bar */
+.pb-safe-or-3 {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
+}
+
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: 64px;
   }
 }
 
