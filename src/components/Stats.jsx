@@ -10,23 +10,19 @@ const Stats = () => {
   ]
 
   return (
-    <section id="stats" className="relative z-20 py-10 sm:py-16 md:py-20 bg-bg-primary">
+    <section id="stats" className="relative z-20 py-10 sm:py-16 md:py-20 bg-bg-primary overflow-hidden">
       <div className="container">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, amount: 0.05 }}
+          transition={{ duration: 0.6 }}
           className="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 shadow-premium border border-white/10"
         >
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
             {stats.map((s, i) => (
-              <motion.div 
+              <div 
                 key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 * i }}
                 className="glass-card-gold p-4 sm:p-6 rounded-xl sm:rounded-2xl text-center group"
               >
                 <div 
@@ -41,7 +37,7 @@ const Stats = () => {
                 <div className="text-[11px] sm:text-xs text-text-muted font-medium hidden sm:block">
                   {s.hint}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </motion.div>
