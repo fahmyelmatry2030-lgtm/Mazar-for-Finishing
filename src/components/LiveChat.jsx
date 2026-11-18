@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   MessageSquare, 
@@ -140,7 +140,7 @@ const LiveChat = () => {
 
               <div className="flex items-center gap-1">
                 <a 
-                  href="tel:201234567890" 
+                  href="tel:201225433070" 
                   className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-accent-gold transition-colors"
                   title="اتصال هاتفي"
                 >
@@ -228,7 +228,7 @@ const LiveChat = () => {
             {/* Footer with WhatsApp Switch */}
             <div className="py-1.5 px-3 bg-bg-primary text-center border-t border-white/5">
               <a
-                href="https://wa.me/201234567890?text=مرحباً،%20أود%20استشارة%20المهندس%20بخصوص%20مشروعي"
+                href="https://wa.me/201225433070?text=مرحباً،%20أود%20استشارة%20المهندس%20بخصوص%20مشروعي"
                 target="_blank"
                 rel="noreferrer"
                 className="text-[11px] font-bold text-emerald-400 hover:underline inline-flex items-center gap-1"
@@ -246,3 +246,4 @@ const LiveChat = () => {
 }
 
 export default LiveChat
+

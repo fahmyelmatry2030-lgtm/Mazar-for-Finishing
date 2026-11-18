@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, Video, Building, MapPin, Clock, CheckCircle2, User, Phone, Send, ArrowLeft, Shield } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -130,7 +130,7 @@ const ConsultationBooking = ({ onOpenPayment }) => {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a 
-                href={`https://wa.me/201234567890?text=${encodeURIComponent(`مرحباً، قمت بحجز استشارة هندسية باسم: ${formData.name} لموعد: ${selectedDate}`)}`}
+                href={`https://wa.me/201225433070?text=${encodeURIComponent(`مرحباً، قمت بحجز استشارة هندسية باسم: ${formData.name} لموعد: ${selectedDate}`)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="btn-premium py-3 px-6 text-sm font-bold flex items-center justify-center gap-2"
@@ -324,3 +324,4 @@ const ConsultationBooking = ({ onOpenPayment }) => {
 }
 
 export default ConsultationBooking
+

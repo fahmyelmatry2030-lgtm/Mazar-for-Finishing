@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Phone, Mail, Send, MessageCircle } from 'lucide-react'
 import emailjs from '@emailjs/browser'
@@ -63,7 +63,7 @@ const Contact = () => {
             <div className="space-y-4 sm:space-y-6">
               
               <a 
-                href="tel:201234567890" 
+                href="tel:201225433070" 
                 className="flex items-center gap-4 p-4 rounded-xl bg-bg-primary/60 border border-white/5 hover:border-accent-gold/40 transition-all group"
               >
                 <div className="w-12 h-12 rounded-xl bg-accent-gold/10 border border-accent-gold/30 flex items-center justify-center text-accent-gold group-hover:bg-accent-gold group-hover:text-bg-primary transition-colors flex-shrink-0">
@@ -78,7 +78,7 @@ const Contact = () => {
               </a>
 
               <a 
-                href="https://wa.me/201234567890" 
+                href="https://wa.me/201225433070" 
                 target="_blank" 
                 rel="noreferrer"
                 className="flex items-center gap-4 p-4 rounded-xl bg-bg-primary/60 border border-white/5 hover:border-emerald-500/40 transition-all group"
@@ -200,3 +200,4 @@ const Contact = () => {
 }
 
 export default Contact
+

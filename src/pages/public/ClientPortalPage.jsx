@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Building2, 
@@ -37,7 +37,7 @@ const sampleClientProjects = {
     projectName: 'فيلا الرحاب الفاخرة',
     location: 'التجمع الخامس - القاهرة الجديدة',
     engineer: 'م. حسام الدين مزار (مدير المشروعات)',
-    engineerPhone: '+201234567890',
+    engineerPhone: '+201225433070',
     startDate: '١٥ يناير ٢٠٢٦',
     expectedDelivery: '٢٤ مايو ٢٠٢٦',
     progress: 68,
@@ -327,7 +327,7 @@ const ClientPortalPage = () => {
                   </div>
 
                   <a 
-                    href={`https://wa.me/201234567890?text=${encodeURIComponent(`مرحباً م. حسام، استفسار حول مشروعي: ${activeProject.projectName}`)}`}
+                    href={`https://wa.me/201225433070?text=${encodeURIComponent(`مرحباً م. حسام، استفسار حول مشروعي: ${activeProject.projectName}`)}`}
                     target="_blank"
                     rel="noreferrer"
                     className="p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors"
@@ -601,3 +601,4 @@ const ClientPortalPage = () => {
 }
 
 export default ClientPortalPage
+

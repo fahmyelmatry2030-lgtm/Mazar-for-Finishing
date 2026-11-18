@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Phone, MessageCircle, ArrowLeft, UserCheck, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -110,7 +110,7 @@ const Navbar = () => {
             <div className="w-[1px] h-5 bg-white/15" />
 
             <a 
-              href="tel:201234567890" 
+              href="tel:201225433070" 
               className="btn-premium py-2 px-4 text-xs font-bold flex items-center gap-1.5 rounded-xl"
             >
               <Phone size={14} />
@@ -242,7 +242,7 @@ const Navbar = () => {
               {/* Bottom Quick Contact in Drawer */}
               <div className="pt-5 border-t border-white/10 mt-6 space-y-2.5">
                 <a 
-                  href="tel:201234567890" 
+                  href="tel:201225433070" 
                   className="btn-premium w-full py-3 flex items-center justify-center gap-2 text-center text-xs sm:text-sm font-bold rounded-xl"
                 >
                   <Phone size={15} />
@@ -250,7 +250,7 @@ const Navbar = () => {
                 </a>
                 
                 <a 
-                  href="https://wa.me/201234567890" 
+                  href="https://wa.me/201225433070" 
                   target="_blank" 
                   rel="noreferrer"
                   className="w-full py-2.5 px-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
@@ -268,3 +268,4 @@ const Navbar = () => {
 }
 
 export default Navbar
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, lazy, Suspense } from 'react'
+﻿import React, { useEffect, useState, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { MessageCircle, ArrowUp } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
@@ -71,7 +71,7 @@ const PublicLayout = () => {
       <Footer />
       <BottomNav />
       <LiveChat />
-      <a href="https://wa.me/201234567890" target="_blank" rel="noreferrer" className="whatsapp-float" aria-label="تواصل عبر واتساب">
+      <a href="https://wa.me/201225433070" target="_blank" rel="noreferrer" className="whatsapp-float" aria-label="تواصل عبر واتساب">
         <MessageCircle size={26} />
       </a>
       <BackToTop />
@@ -214,3 +214,4 @@ function App() {
 }
 
 export default App
+
