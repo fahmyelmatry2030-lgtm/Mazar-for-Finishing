@@ -22,7 +22,8 @@ import {
   Plus,
   Minus,
   RefreshCw,
-  BadgeCheck
+  BadgeCheck,
+  Ruler
 } from 'lucide-react'
 import { useStore } from '../store/useStore'
 import toast from 'react-hot-toast'
@@ -40,24 +41,21 @@ const FINISHING_TIERS = [
   { 
     id: 'economic', 
     title: 'اقتصادي (Economic)', 
-    pricePerSqm: 6500,
-    badge: 'عملي ومضمون',
-    desc: 'خامات محلية فرز أول مع تأسيس هندسي سليم وموثق وضمان على الأعمال.'
+    badge: 'عملي وموثق',
+    desc: 'خامات محلية فرز أول مع تأسيس هندسي سليم وضمان معتمد على كافة أعمال التأسيس.'
   },
   { 
     id: 'standard', 
     title: 'متوسط (Standard)', 
-    pricePerSqm: 9500,
     badge: 'الأكثر طلباً',
     popular: true,
-    desc: 'تشطيب عصري، بورسلين مستورد، أطقم صحية معلقة، وإضاءات ليد مخفية.'
+    desc: 'تشطيب عصري، بورسلين مستورد، أطقم صحية معلقة، وإضاءات ليد مخفية وديكورات حديثة.'
   },
   { 
     id: 'luxury', 
     title: 'فاخر (Luxury)', 
-    pricePerSqm: 14500,
     badge: 'أعلى رفاهية',
-    desc: 'رخام طبيعي، سمارت هوم، أبواب خشبية مدرعة، وبانوهات جدارية إيطالية.'
+    desc: 'رخام طبيعي، سمارت هوم، أبواب خشبية مدرعة، وبانوهات جدارية وتصميم فندقي راقي.'
   }
 ]
 
@@ -85,6 +83,35 @@ const ProfessionalQuotationWizard = () => {
   const [bathrooms, setBathrooms] = useState(2)
   const [kitchens, setKitchens] = useState(1)
   const [balconies, setBalconies] = useState(1)
+
+  // Step 2: Exact Dimensions per Space (Length x Width in meters)
+  const [roomDimensions, setRoomDimensions] = useState([
+    { id: 1, length: 4.5, width: 4.0 },
+    { id: 2, length: 4.0, width: 3.5 },
+    { id: 3, length: 3.5, width: 3.0 },
+    { id: 4, length: 3.5, width: 3.0 },
+    { id: 5, length: 3.5, width: 3.0 },
+    { id: 6, length: 3.5, width: 3.0 }
+  ])
+
+  const [receptionDimensions, setReceptionDimensions] = useState([
+    { id: 1, length: 6.0, width: 4.0 },
+    { id: 2, length: 5.0, width: 4.0 },
+    { id: 3, length: 4.5, width: 3.5 },
+    { id: 4, length: 4.0, width: 3.5 }
+  ])
+
+  const [bathroomDimensions, setBathroomDimensions] = useState([
+    { id: 1, length: 2.5, width: 2.0 },
+    { id: 2, length: 2.0, width: 1.6 },
+    { id: 3, length: 2.0, width: 1.5 },
+    { id: 4, length: 1.8, width: 1.4 }
+  ])
+
+  const [kitchenDimensions, setKitchenDimensions] = useState([
+    { id: 1, length: 3.5, width: 3.0 },
+    { id: 2, length: 2.5, width: 2.0 }
+  ])
 
   // Step 3: Client Details
   const [clientName, setClientName] = useState('')
@@ -170,6 +197,9 @@ const ProfessionalQuotationWizard = () => {
 
   const handleSendWhatsApp = () => {
     const propertyLabel = PROPERTY_TYPES.find(p => p.id === propertyType)?.label
+    const roomDimsText = roomDimensions.slice(0, rooms).map((r, i) => `غرفة${i+1} (${r.length}×${r.width}م)`).join('، ')
+    const recDimsText = receptionDimensions.slice(0, reception).map((r, i) => `ريسبشن${i+1} (${r.length}×${r.width}م)`).join('، ')
+    
     const message = `🏛️ *طلب مقايسة تشطيب هندسية - مزار للمقاولات والديكور*
 👤 *العميل:* ${clientName}
 📱 *الهاتف:* ${clientPhone}
@@ -177,11 +207,14 @@ const ProfessionalQuotationWizard = () => {
 📐 *نوع ومساحة الوحدة:* ${propertyLabel} بمساحة ${area} م²
 ⭐ *مستوى التشطيب:* ${selectedTier.title}
 🧱 *الحالة الراهنة:* ${selectedState.label}
-🔲 *التقسيم:* ${rooms} غرف نوم | ${reception} قطع ريسبشن | ${bathrooms} حمام | ${kitchens} مطبخ | ${balconies} بلكونة
+🔲 *التقسيم والمقاسات:*
+- غرف النوم: ${roomDimsText}
+- الريسبشن: ${recDimsText}
+- المرافق: ${bathrooms} حمام | ${kitchens} مطبخ | ${balconies} بلكونة
 💰 *التكلفة التقديرية الإجمالية:* ${roundedTotal.toLocaleString('ar-EG')} ج.م
 🏷️ *كود المقايسة:* ${quoteCode}
 
-مرحباً م. محمد العجيزي، أود مناقشة تفاصيل هذه المقايسة وتحديد موعد للمعاينة الهندسية.`
+مرحباً م. محمد العجيزي، أود مناقشة تفاصيل هذه المقايسة وتطبيق المعادلات الهندسية لتحديد التكلفة النهائية.`
 
     window.open(`https://wa.me/201225433070?text=${encodeURIComponent(message)}`, '_blank')
   }
@@ -342,11 +375,9 @@ const ProfessionalQuotationWizard = () => {
                         <p className="text-text-secondary text-xs leading-relaxed mb-4">{tier.desc}</p>
                       </div>
 
-                      <div className="pt-3 border-t border-white/10 flex items-baseline justify-between">
-                        <span className="text-[11px] text-text-muted font-bold">متوسط السعر:</span>
-                        <div className="text-accent-gold font-black text-sm">
-                          {tier.pricePerSqm.toLocaleString('ar-EG')} <span className="text-[10px]">ج.م/م²</span>
-                        </div>
+                      <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                        <span className="text-text-muted font-bold">مستوى التنفيذ:</span>
+                        <span className="text-accent-gold font-bold">{tier.badge}</span>
                       </div>
                     </div>
                   )
@@ -443,20 +474,192 @@ const ProfessionalQuotationWizard = () => {
               ))}
             </div>
 
-            {/* Live Calculation Preview Banner */}
-            <div className="p-4 rounded-2xl bg-accent-gold/10 border border-accent-gold/30 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-accent-gold text-bg-primary flex items-center justify-center flex-shrink-0">
-                  <Calculator size={20} />
+            {/* Exact Room Dimensions Input (Length x Width) */}
+            <div className="mt-8 pt-6 border-t border-white/10 space-y-5">
+              <div>
+                <h4 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                  <Ruler size={17} className="text-accent-gold" />
+                  <span>أبعاد ومقاسات الفراغات (طول × عرض بالمتر)</span>
+                </h4>
+                <p className="text-xs text-text-muted mt-1">
+                  أدخل أبعاد الغرف بالمتر لحساب كميات المحارة والدهانات والباركيه والسيراميك بدقة هندسية.
+                </p>
+              </div>
+
+              {/* Bedrooms Dimensions */}
+              <div>
+                <div className="text-xs font-bold text-accent-gold mb-2.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-gold" />
+                  <span>مقاسات غرف النوم:</span>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {roomDimensions.slice(0, rooms).map((r, i) => (
+                    <div key={r.id} className="p-3.5 rounded-xl bg-bg-tertiary/70 border border-white/10">
+                      <div className="flex justify-between items-center text-xs font-bold text-white mb-2">
+                        <span>غرفة نوم {i + 1}</span>
+                        <span className="text-accent-gold font-mono">{(r.length * r.width).toFixed(1)} م²</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-[10px] text-text-muted block mb-1">الطول (م)</span>
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="1"
+                            value={r.length}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 0
+                              setRoomDimensions(prev => prev.map((item, idx) => idx === i ? { ...item, length: val } : item))
+                            }}
+                            className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-center text-white font-mono font-bold text-xs outline-none focus:border-accent-gold"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-text-muted block mb-1">العرض (م)</span>
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="1"
+                            value={r.width}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 0
+                              setRoomDimensions(prev => prev.map((item, idx) => idx === i ? { ...item, width: val } : item))
+                            }}
+                            className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-center text-white font-mono font-bold text-xs outline-none focus:border-accent-gold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reception Dimensions */}
+              <div>
+                <div className="text-xs font-bold text-accent-gold mb-2.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent-gold" />
+                  <span>مقاسات قطع الريسبشن:</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {receptionDimensions.slice(0, reception).map((rec, i) => (
+                    <div key={rec.id} className="p-3.5 rounded-xl bg-bg-tertiary/70 border border-white/10">
+                      <div className="flex justify-between items-center text-xs font-bold text-white mb-2">
+                        <span>قطعة ريسبشن {i + 1}</span>
+                        <span className="text-accent-gold font-mono">{(rec.length * rec.width).toFixed(1)} م²</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-[10px] text-text-muted block mb-1">الطول (م)</span>
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="1"
+                            value={rec.length}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 0
+                              setReceptionDimensions(prev => prev.map((item, idx) => idx === i ? { ...item, length: val } : item))
+                            }}
+                            className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-center text-white font-mono font-bold text-xs outline-none focus:border-accent-gold"
+                          />
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-text-muted block mb-1">العرض (م)</span>
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="1"
+                            value={rec.width}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 0
+                              setReceptionDimensions(prev => prev.map((item, idx) => idx === i ? { ...item, width: val } : item))
+                            }}
+                            className="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-center text-white font-mono font-bold text-xs outline-none focus:border-accent-gold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bathrooms & Kitchens */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-xs text-text-muted font-bold">التقدير المبدئي للتكلفة:</div>
-                  <div className="text-base sm:text-lg font-black text-white">
-                    {roundedTotal.toLocaleString('ar-EG')} ج.م
+                  <div className="text-xs font-bold text-accent-gold mb-2.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent-gold" />
+                    <span>مقاسات الحمامات:</span>
+                  </div>
+                  <div className="space-y-2">
+                    {bathroomDimensions.slice(0, bathrooms).map((b, i) => (
+                      <div key={b.id} className="p-3 rounded-xl bg-bg-tertiary/70 border border-white/10 flex items-center justify-between gap-3 text-xs">
+                        <span className="font-bold text-white flex-shrink-0">حمام {i + 1}</span>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={b.length}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 0
+                              setBathroomDimensions(prev => prev.map((item, idx) => idx === i ? { ...item, length: val } : item))
+                            }}
+                            className="w-16 bg-black/40 border border-white/10 rounded-lg p-1.5 text-center text-white font-mono text-xs outline-none focus:border-accent-gold"
+                          />
+                          <span className="text-text-muted">×</span>
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={b.width}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 0
+                              setBathroomDimensions(prev => prev.map((item, idx) => idx === i ? { ...item, width: val } : item))
+                            }}
+                            className="w-16 bg-black/40 border border-white/10 rounded-lg p-1.5 text-center text-white font-mono text-xs outline-none focus:border-accent-gold"
+                          />
+                          <span className="text-accent-gold font-mono font-bold text-xs mr-2">={(b.length * b.width).toFixed(1)}م²</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-xs font-bold text-accent-gold mb-2.5 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent-gold" />
+                    <span>مقاسات المطابخ:</span>
+                  </div>
+                  <div className="space-y-2">
+                    {kitchenDimensions.slice(0, kitchens).map((k, i) => (
+                      <div key={k.id} className="p-3 rounded-xl bg-bg-tertiary/70 border border-white/10 flex items-center justify-between gap-3 text-xs">
+                        <span className="font-bold text-white flex-shrink-0">مطبخ {i + 1}</span>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={k.length}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 0
+                              setKitchenDimensions(prev => prev.map((item, idx) => idx === i ? { ...item, length: val } : item))
+                            }}
+                            className="w-16 bg-black/40 border border-white/10 rounded-lg p-1.5 text-center text-white font-mono text-xs outline-none focus:border-accent-gold"
+                          />
+                          <span className="text-text-muted">×</span>
+                          <input
+                            type="number"
+                            step="0.1"
+                            value={k.width}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 0
+                              setKitchenDimensions(prev => prev.map((item, idx) => idx === i ? { ...item, width: val } : item))
+                            }}
+                            className="w-16 bg-black/40 border border-white/10 rounded-lg p-1.5 text-center text-white font-mono text-xs outline-none focus:border-accent-gold"
+                          />
+                          <span className="text-accent-gold font-mono font-bold text-xs mr-2">={(k.length * k.width).toFixed(1)}م²</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-              <span className="text-[11px] text-accent-gold font-bold">بمعدل ~ {Math.round(roundedTotal / area).toLocaleString('ar-EG')} ج/م²</span>
             </div>
           </motion.div>
         )}
@@ -624,6 +827,40 @@ const ProfessionalQuotationWizard = () => {
               <div className="p-3 rounded-xl bg-white/5 border border-white/5">
                 <span className="text-text-muted block text-[11px] mb-0.5">مدة التنفيذ المقدرة</span>
                 <span className="font-bold text-accent-gold">٦٠ - ٩٠ يوماً</span>
+              </div>
+            </div>
+
+            {/* Room Dimensions Schedule */}
+            <div className="p-4 rounded-2xl bg-bg-tertiary/60 border border-white/10">
+              <h4 className="text-xs font-black text-accent-gold mb-3 flex items-center gap-1.5">
+                <Ruler size={15} />
+                <span>جدول حصر المساحات والأبعاد المسجلة:</span>
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs">
+                {roomDimensions.slice(0, rooms).map((r, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-black/40 border border-white/5 flex justify-between items-center">
+                    <span className="text-text-muted font-bold text-[11px]">غرفة {i + 1}:</span>
+                    <span className="font-bold text-white font-mono">{r.length}×{r.width}م ({(r.length * r.width).toFixed(1)}م²)</span>
+                  </div>
+                ))}
+                {receptionDimensions.slice(0, reception).map((r, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-black/40 border border-white/5 flex justify-between items-center">
+                    <span className="text-text-muted font-bold text-[11px]">ريسبشن {i + 1}:</span>
+                    <span className="font-bold text-white font-mono">{r.length}×{r.width}م ({(r.length * r.width).toFixed(1)}م²)</span>
+                  </div>
+                ))}
+                {bathroomDimensions.slice(0, bathrooms).map((b, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-black/40 border border-white/5 flex justify-between items-center">
+                    <span className="text-text-muted font-bold text-[11px]">حمام {i + 1}:</span>
+                    <span className="font-bold text-white font-mono">{b.length}×{b.width}م ({(b.length * b.width).toFixed(1)}م²)</span>
+                  </div>
+                ))}
+                {kitchenDimensions.slice(0, kitchens).map((k, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-black/40 border border-white/5 flex justify-between items-center">
+                    <span className="text-text-muted font-bold text-[11px]">مطبخ {i + 1}:</span>
+                    <span className="font-bold text-white font-mono">{k.length}×{k.width}م ({(k.length * k.width).toFixed(1)}م²)</span>
+                  </div>
+                ))}
               </div>
             </div>
 
