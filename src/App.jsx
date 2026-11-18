@@ -9,7 +9,6 @@ import { useStore } from './store/useStore'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import BottomNav from './components/BottomNav'
-import LiveChat from './components/LiveChat'
 
 const DashboardLayout = lazy(() => import('./components/DashboardLayout'))
 const Overview = lazy(() => import('./pages/Overview'))
@@ -70,7 +69,6 @@ const PublicLayout = () => {
       <Outlet />
       <Footer />
       <BottomNav />
-      <LiveChat />
       <a href="https://wa.me/201225433070" target="_blank" rel="noreferrer" className="whatsapp-float" aria-label="تواصل عبر واتساب">
         <MessageCircle size={26} />
       </a>
